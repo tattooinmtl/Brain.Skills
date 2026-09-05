@@ -1,0 +1,20 @@
+{
+  "author": "MiniMax Agent",
+  "category": "Knowledge Management",
+  "created_at": "2026-03-26T04:05:30Z",
+  "description": "Structured knowledge graph system for persistent agent memory with typed entities, relationship constraints, and verifiable data. Enable skills to share state, query interconnected knowledge, and plan multi-step actions as graph transformations",
+  "id": 380571960352845,
+  "name": "ontology",
+  "platform": "minimax",
+  "skill_id": 190734,
+  "tags": [
+    "knowledge-graph",
+    "ontology",
+    "memory",
+    "entities",
+    "relations",
+    "structured-data"
+  ],
+  "updated_at": 1774471172836,
+  "version": "1.0.4"
+}

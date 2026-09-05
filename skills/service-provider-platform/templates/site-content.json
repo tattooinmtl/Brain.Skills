@@ -1,0 +1,171 @@
+{
+  "meta": {
+    "businessName": "Summit Roofing Co.",
+    "tagline": "Trusted roof repair and replacement in Austin",
+    "vertical": "roofer",
+    "primaryCity": "Austin",
+    "state": "TX",
+    "phone": "(512) 555-0199",
+    "email": "hello@summitroofing.example",
+    "address": {
+      "street": "1200 Congress Ave",
+      "city": "Austin",
+      "state": "TX",
+      "zip": "78701"
+    },
+    "hours": [
+      { "day": "Monday", "open": "7:00 AM", "close": "6:00 PM" },
+      { "day": "Tuesday", "open": "7:00 AM", "close": "6:00 PM" },
+      { "day": "Wednesday", "open": "7:00 AM", "close": "6:00 PM" },
+      { "day": "Thursday", "open": "7:00 AM", "close": "6:00 PM" },
+      { "day": "Friday", "open": "7:00 AM", "close": "6:00 PM" },
+      { "day": "Saturday", "open": "8:00 AM", "close": "2:00 PM" },
+      { "day": "Sunday", "open": "", "close": "", "closed": true }
+    ],
+    "licenseNumber": "TX-12345678",
+    "insuranceText": "Fully licensed and insured for residential and commercial work",
+    "yearEstablished": 2008,
+    "social": [
+      { "platform": "facebook", "url": "https://facebook.com/" },
+      { "platform": "google", "url": "https://g.page/" }
+    ],
+    "seo": {
+      "title": "Summit Roofing Co. | Roof Repair & Replacement in Austin, TX",
+      "description": "Licensed Austin roofers for repair, replacement, and storm damage. Free inspections. Call for a quote today.",
+      "keywords": ["roof repair Austin", "roof replacement Austin", "Austin roofer", "storm damage roof"]
+    }
+  },
+  "theme": {
+    "accent": "#c2410c",
+    "fontHeadline": "Outfit",
+    "fontBody": "Work Sans"
+  },
+  "hero": {
+    "headline": "Austin's trusted roofing team",
+    "subheadline": "Repair, replacement, and storm damage — free inspections with honest quotes.",
+    "ctaPrimary": { "label": "Get Free Quote", "href": "/contact" },
+    "ctaSecondary": { "label": "Call Now", "href": "tel:+15125550199" },
+    "image": "/assets/images/hero-roofing.webp",
+    "badges": ["Licensed & Insured", "Free Inspections", "Local Crew"]
+  },
+  "trustBar": [
+    { "icon": "shield", "label": "Licensed & Insured" },
+    { "icon": "clock", "label": "Same-week estimates" },
+    { "icon": "star", "label": "500+ local projects" },
+    { "icon": "certificate", "label": "Workmanship warranty" }
+  ],
+  "services": [
+    {
+      "id": "roof-repair",
+      "name": "Roof Repair",
+      "slug": "roof-repair",
+      "shortDescription": "Stop leaks fast with durable fixes.",
+      "longDescription": "We locate the source of leaks, replace damaged shingles or flashing, and document everything for your records. Most repairs completed in one visit.",
+      "featured": true,
+      "startingPrice": "From $350"
+    },
+    {
+      "id": "roof-replacement",
+      "name": "Roof Replacement",
+      "slug": "roof-replacement",
+      "shortDescription": "Full tear-off and install with premium materials.",
+      "longDescription": "When repair is no longer cost-effective, we install architectural shingles or metal systems with proper ventilation and cleanup.",
+      "featured": true,
+      "startingPrice": "Free estimate"
+    },
+    {
+      "id": "storm-damage",
+      "name": "Storm Damage Inspection",
+      "slug": "storm-damage",
+      "shortDescription": "Hail and wind assessments with insurance support.",
+      "longDescription": "After severe weather we provide photo documentation and meet adjusters on site when needed.",
+      "featured": true
+    },
+    {
+      "id": "gutters",
+      "name": "Gutters & Drainage",
+      "slug": "gutters",
+      "shortDescription": "Protect fascia and foundation from water.",
+      "longDescription": "Seamless gutter install, guards, and downspout routing.",
+      "featured": false
+    }
+  ],
+  "serviceAreas": [
+    { "name": "Austin", "description": "Central Austin and downtown" },
+    { "name": "Round Rock", "description": "North suburbs" },
+    { "name": "Cedar Park", "description": "Northwest" },
+    { "name": "Pflugerville", "description": "Northeast" },
+    { "name": "Georgetown", "description": "Williamson County" }
+  ],
+  "about": {
+    "headline": "Local roofers who show up on time",
+    "body": "Summit Roofing has served Austin homeowners since 2008. We're a small crew — not a call center — so you talk directly to the people on your roof.",
+    "team": [
+      { "name": "Mike Torres", "role": "Owner & Lead Estimator" },
+      { "name": "Sarah Chen", "role": "Project Manager" }
+    ],
+    "values": [
+      { "title": "Honest assessments", "description": "We recommend repair when it makes sense — not a full replacement every time." },
+      { "title": "Clean job sites", "description": "Magnetic nail sweep and daily cleanup are standard." },
+      { "title": "Clear communication", "description": "You'll know the schedule, crew arrival window, and final price before work starts." }
+    ]
+  },
+  "gallery": [
+    {
+      "id": "g1",
+      "title": "Shingle replacement — South Austin",
+      "beforeImage": "/assets/images/gallery-1-before.webp",
+      "afterImage": "/assets/images/gallery-1-after.webp",
+      "caption": "Full replacement after hail damage"
+    }
+  ],
+  "testimonials": [
+    {
+      "id": "t1",
+      "author": "Jennifer L.",
+      "location": "Austin, TX",
+      "rating": 5,
+      "quote": "They found the leak in an hour and fixed it the same day. Fair price and no pressure.",
+      "service": "Roof Repair"
+    },
+    {
+      "id": "t2",
+      "author": "Robert M.",
+      "location": "Round Rock, TX",
+      "rating": 5,
+      "quote": "Full roof replacement was on schedule. Crew was respectful and the yard was spotless.",
+      "service": "Roof Replacement"
+    }
+  ],
+  "faq": [
+    {
+      "id": "f1",
+      "question": "Do you offer free estimates?",
+      "answer": "Yes. We provide free on-site inspections and written quotes for repair and replacement."
+    },
+    {
+      "id": "f2",
+      "question": "Do you work with homeowners insurance?",
+      "answer": "We document storm damage and can meet your adjuster on site. You maintain control of your claim."
+    },
+    {
+      "id": "f3",
+      "question": "How long does a roof replacement take?",
+      "answer": "Most residential roofs are completed in 1–2 days weather permitting."
+    }
+  ],
+  "ctaBand": {
+    "headline": "Ready for a free roof inspection?",
+    "subheadline": "Call or request a quote — we respond within one business day.",
+    "buttonLabel": "Get Free Quote"
+  },
+  "emergency": {
+    "enabled": true,
+    "headline": "Storm damage or active leak?",
+    "phone": "(512) 555-0199"
+  },
+  "legal": {
+    "privacySummary": "We collect contact information you submit on forms to respond to your request. We do not sell your data.",
+    "termsSummary": "Estimates are valid for 30 days. Work is performed under a signed service agreement."
+  }
+}

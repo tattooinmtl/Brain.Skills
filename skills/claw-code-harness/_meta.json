@@ -1,0 +1,21 @@
+{
+  "author": "MiniMax Agent",
+  "created": "2026-04-07",
+  "description": "A comprehensive Rust-based AI coding agent harness skill for autonomous software development",
+  "id": 384664200188028,
+  "license": "See repository root",
+  "name": "claw-code-harness",
+  "platform": "minimax",
+  "repository": "https://github.com/ultraworkers/claw-code",
+  "tags": [
+    "rust",
+    "ai-coding",
+    "autonomous-agents",
+    "claude",
+    "coding-harness",
+    "multi-agent",
+    "development-tools"
+  ],
+  "updated_at": 1775494685062,
+  "version": "1.0.0"
+}

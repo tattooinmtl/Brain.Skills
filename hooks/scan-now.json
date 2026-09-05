@@ -1,0 +1,9 @@
+{
+  "name": "scan-now",
+  "trigger": "SessionStart",
+  "description": "Run bin/skills.exe sync on session start so newly added skills are indexed natively before the agent picks up work.",
+  "command": "C:/.skills/bin/skills.exe sync",
+  "background": true,
+  "timeout_ms": 15000,
+  "notes": "Native Go sync: scans C:/.skills/skills and generates skills.json and INDEX.md."
+}

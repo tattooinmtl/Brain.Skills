@@ -1,0 +1,1983 @@
+{
+  "generated": true,
+  "generatedAt": "2026-09-05T15:35:48Z",
+  "source": "C:/.skills/skills",
+  "count": 90,
+  "nestedCount": 192,
+  "skills": [
+    {
+      "name": "ai-agents-architect",
+      "path": "ai-agents-architect",
+      "category": "general",
+      "description": "Expert in designing and building autonomous AI agents. Helps with agent architecture, tool integration, memory systems, planning strategies, and multi-agent orchestration. Use when: building AI agents, designing autonomous systems, implementing tool use, function calling patterns, or agent workflows.",
+      "is_nested": false
+    },
+    {
+      "name": "app-builder",
+      "path": "app-builder",
+      "category": "general",
+      "description": "Full-stack application builder that creates web apps, APIs, mobile apps, and more from natural language requests. Use when the user wants to build a new application, add features to existing projects, scaffold a project structure, or plan an implementation.",
+      "is_nested": false
+    },
+    {
+      "name": "bash-coding",
+      "path": "bash-coding",
+      "category": "general",
+      "description": "Bash/Shell scripting environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "brainstorming",
+      "path": "brainstorming",
+      "category": "general",
+      "description": "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation.",
+      "is_nested": false
+    },
+    {
+      "name": "brandkit",
+      "path": "brandkit",
+      "category": "general",
+      "description": "Skill migrated from user agent home. Original frontmatter missing.",
+      "is_nested": false
+    },
+    {
+      "name": "clap-dev-skill",
+      "path": "clap-dev-skill",
+      "category": "general",
+      "description": "Full-pipeline skill for building Windows CLAP audio plugins from a YAML spec. Use this skill whenever the user wants to create, generate, build, validate, or package a CLAP audio plugin — even if they just describe what the plugin should sound like in plain language. Covers the entire workflow: spec authoring → NIH-plug/Rust code generation → cargo xtask bundle → clap-validator QA → Windows install hint. Trigger this skill for any mention of CLAP plugin, audio plugin development, NIH-plug, clap-validator, plugin codegen, or \"I want to build a synth/effect/instrument plugin\".",
+      "is_nested": false
+    },
+    {
+      "name": "claw-code-harness",
+      "path": "claw-code-harness",
+      "category": "general",
+      "description": "A comprehensive Rust-based AI coding agent harness skill. Use when users ask about claw-code, ultraworkers/claw-code, autonomous coding agents, Claude CLI tools, AI pair programming, multi-agent coordination systems, or how to build AI-powered coding workflows. Triggers for phrases like \"claw code\", \"autonomous coding\", \"AI coding harness\", \"coding agent framework\", \"rust coding tools\", \"anthropic CLI\", \"multi-agent development\", \"clawhip\", \"OmX workflow\", or questions about building AI-first development environments.",
+      "is_nested": false
+    },
+    {
+      "name": "cobol-coding",
+      "path": "cobol-coding",
+      "category": "general",
+      "description": "COBOL environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "code-review",
+      "path": "code-review",
+      "category": "general",
+      "description": "Review changed or specified code for correctness bugs and quality issues.",
+      "is_nested": false
+    },
+    {
+      "name": "coder-ai-senior-developer",
+      "path": "coder-ai-senior-developer",
+      "category": "general",
+      "description": "Elite AI-programmer skill for senior-level development tasks. Use when users ask to write production-ready code, create APIs, build backends/frontends, optimize performance, refactor code, find bugs, or design system architectures. Trigger phrases: \"write code\", \"create API\", \"build backend\", \"optimize\", \"refactor\", \"find bug\", \"design architecture\", \"system design",
+      "is_nested": false
+    },
+    {
+      "name": "cpp-coding",
+      "path": "cpp-coding",
+      "category": "general",
+      "description": "C/C++ environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "cpp-game-engine",
+      "path": "cpp-game-engine",
+      "category": "general",
+      "description": "\u003e-",
+      "is_nested": false
+    },
+    {
+      "name": "cpp-lua-engine",
+      "path": "cpp-lua-engine",
+      "category": "general",
+      "description": "Expert workflow for custom C++ game engines with embedded Lua. Use when designing C++ vs Lua architecture, generating or reviewing bindings (sol2, LuaBridge, raw Lua C API), writing gameplay Lua against a C++ host, debugging crashes and lifetime bugs at the C++-Lua boundary, fixing Lua GC hitches, or building hot-reload, sandboxing, and modding APIs. Triggers include bind this C++ component to Lua, design the scripting API, Lua GC hitch in the game loop, hot-reload scripts, userdata lifetime, sol2 usertype, script sandbox, embed Lua, and LuaBridge binding.",
+      "is_nested": false
+    },
+    {
+      "name": "csharp-coding",
+      "path": "csharp-coding",
+      "category": "general",
+      "description": "C# / .NET environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "d-research-ultra",
+      "path": "d-research-ultra",
+      "category": "general",
+      "description": "Prebuilt multi-agent deep research skill for AI agents. Use for source-backed web research, public-data collection, literature reviews, due diligence, policy or standards analysis, market or technical research, evidence ledgers, execution gates, blocker reports, and audit-grade synthesis. Ships the D Research core methodology plus a runtime-neutral orchestrator and six bundled worker-agent role definitions; the host CLI maps those roles to its own subagent/task mechanism when available, otherwise the main agent runs the same gates manually.",
+      "is_nested": false
+    },
+    {
+      "name": "design-taste-frontend",
+      "path": "design-taste-frontend",
+      "category": "general",
+      "description": "Skill migrated from user agent home. Original frontmatter missing.",
+      "is_nested": false
+    },
+    {
+      "name": "design-taste-frontend-v1",
+      "path": "design-taste-frontend-v1",
+      "category": "general",
+      "description": "Skill migrated from user agent home. Original frontmatter missing.",
+      "is_nested": false
+    },
+    {
+      "name": "dispatching-parallel-agents",
+      "path": "dispatching-parallel-agents",
+      "category": "general",
+      "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies",
+      "is_nested": false
+    },
+    {
+      "name": "dogfood",
+      "path": "dogfood",
+      "category": "general",
+      "description": "Skill migrated from user agent home. Original frontmatter missing.",
+      "is_nested": false
+    },
+    {
+      "name": "dotnet-fullstack",
+      "path": "dotnet-fullstack",
+      "category": "general",
+      "description": "Expert .NET full-stack development with C#, VB.NET, and modern UI/UX design. Use when users ask for ASP.NET Core, Windows Forms, WPF applications, API development, database integration, performance optimization, code refactoring, or modernization of legacy .NET applications. Triggers: \"create .NET application\", \"build ASP.NET\", \"VB.NET\", \"Windows Forms\", \"WPF\", \"Entity Framework\", \"LINQ\", \"async programming\", \"refactor legacy code\", \"modernize .NET",
+      "is_nested": false
+    },
+    {
+      "name": "executing-plans",
+      "path": "executing-plans",
+      "category": "general",
+      "description": "Use when you have a written implementation plan to execute in a separate session with review checkpoints",
+      "is_nested": false
+    },
+    {
+      "name": "extend-nimagent",
+      "path": "extend-nimagent",
+      "category": "general",
+      "description": "Create or hot-load a new tool, skill (slash command), MCP server entry, theme, provider/model, or installable nimpkg package compatible with NimAgent. Use when the user asks how to extend NimAgent, add a tool, build a skill, or package one for the registry.",
+      "is_nested": false
+    },
+    {
+      "name": "extend-omni",
+      "path": "extend-omni",
+      "category": "general",
+      "description": "Create or hot-load a new tool, skill (slash command), MCP server entry, theme, provider/model, or installable omni-pkg package compatible with Omni. Use when the user asks how to extend Omni, add a tool, build a skill, or package one for the registry.",
+      "is_nested": false
+    },
+    {
+      "name": "find-skills",
+      "path": "find-skills",
+      "category": "general",
+      "description": "Helps users discover and install agent skills when they ask questions like \"how do I do X\", \"find a skill for X\", \"is there a skill that can...\", or express interest in extending capabilities. This skill should be used when the user is looking for functionality that might exist as an installable skill.",
+      "is_nested": false
+    },
+    {
+      "name": "finishing-a-development-branch",
+      "path": "finishing-a-development-branch",
+      "category": "general",
+      "description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work",
+      "is_nested": false
+    },
+    {
+      "name": "full-stack-app-developer",
+      "path": "full-stack-app-developer",
+      "category": "general",
+      "description": "Skill integral para desarrollo de aplicaciones full stack completas. Úsalo cuando los usuarios soliciten construir aplicaciones web desde cero, desarrollar backend APIs, crear interfaces frontend, diseñar bases de datos, implementar UI/UX, integrar IA, configurar autenticación, desplegar aplicaciones, o cualquier tarea de desarrollo de software que abarque frontend, backend o stack completo. Disparadores: \"construir una app\", \"crear aplicación web\", \"desarrollar backend\", \"crear API\", \"full stack\", \"desarrollo frontend\", \"desarrollo backend\", \"diseño de base de datos\", \"implementar autenticación\", \"agregar funciones de IA\", \"desplegar aplicación\", \"crear esquema de base de datos\", \"construir interfaz de usuario\", \"implementar lógica de negocio\", \"desarrollo de software\", \"arquitectura de aplicaciones\", \"API REST\", \"GraphQL\", \"funciones en tiempo real\", \"microservicios",
+      "is_nested": false
+    },
+    {
+      "name": "fullstack-dev",
+      "path": "fullstack-dev",
+      "category": "general",
+      "description": "Full-stack backend architecture and frontend-backend integration guide. TRIGGER when: building a full-stack app, creating REST API with frontend, scaffolding backend service, building todo app, building CRUD app, building real-time app, building chat app, Express + React, Next.js API, Node.js backend, Python backend, Go backend, designing service layers, implementing error handling, managing config/auth, setting up API clients, implementing auth flows, handling file uploads, adding real-time features (SSE/WebSocket), hardening for production. DO NOT TRIGGER when: pure frontend UI work, pure CSS/styling, database schema only.",
+      "is_nested": false
+    },
+    {
+      "name": "game-designer",
+      "path": "game-designer",
+      "category": "general",
+      "description": "Design gameplay systems, mechanics, economies, and player progressions with rigorous documentation. Use when users ask to create game design documents (GDD), design core gameplay loops, balance game economies, define player progression systems, prototype mechanics, or analyze game systems for balance issues. Triggers on requests involving game mechanics, player motivation design, economy balancing, progression curves, and gameplay documentation.",
+      "is_nested": false
+    },
+    {
+      "name": "game-ui-design",
+      "path": "game-ui-design",
+      "category": "general",
+      "description": "Create distinctive, production-grade game user interfaces with high design quality. Use when building game HUDs, menus, inventory screens, dialogue systems, or any in-game UI elements. Generates creative, polished code and design that avoids generic \"mobile game\" aesthetics with bold, genre-appropriate, memorable interfaces.",
+      "is_nested": false
+    },
+    {
+      "name": "go-coding",
+      "path": "go-coding",
+      "category": "general",
+      "description": "Go environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "high-end-visual-design",
+      "path": "high-end-visual-design",
+      "category": "general",
+      "description": "Skill migrated from user agent home. Original frontmatter missing.",
+      "is_nested": false
+    },
+    {
+      "name": "html-game-builder",
+      "path": "html-game-builder",
+      "category": "general",
+      "description": "Build a small, self-contained HTML5 canvas game in a single file.",
+      "is_nested": false
+    },
+    {
+      "name": "html-presentation-generator",
+      "path": "html-presentation-generator",
+      "category": "general",
+      "description": "Generate professional multi-page HTML presentations (PPT) exportable to PDF/PPTX. Covers cover pages, table of contents, section dividers, content pages, and summary/closing slides. TRIGGERS: PPT, presentation, slides, 演示文稿, 幻灯片, HTML PPT, slide deck, 制作PPT, make slides, create presentation.",
+      "is_nested": false
+    },
+    {
+      "name": "icon-maker",
+      "path": "icon-maker",
+      "category": "general",
+      "description": "AI icon generator that creates professional-grade icons from descriptions. Supports Apps, websites, desktop software, games, brand logos, social avatars, and more. 20+ style options including Minimal, 3D, Texture, Retro, and Artistic series, plus random recommendations. Trigger keywords: icon, favicon, logo, avatar, app icon, generate icon, design icon.",
+      "is_nested": false
+    },
+    {
+      "name": "imagegen",
+      "path": "imagegen",
+      "category": "general",
+      "description": "Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas.",
+      "is_nested": false
+    },
+    {
+      "name": "int-analyze-method",
+      "path": "int-analyze-method",
+      "category": "general",
+      "description": "55 Structured Analytic Techniques (SAT) for intelligence analysis, from Heuer \u0026 Pherson's《情报分析：结构化分析方法》(2nd ed, 2015). Use when performing competitive/hypothesis-driven analysis, scenario planning, decision support, cognitive bias mitigation, or team-based analytical work. Each of the 55 methods is a standalone chapter. Four methodological paradigms (Empiricist / Quantitative / Cognitive-Psychology / Collaborative) and eight functional categories organize the toolkit. Apply when investigating ambiguous evidence, judging competing explanations, generating alternative futures, or stress-testing analytical conclusions.",
+      "is_nested": false
+    },
+    {
+      "name": "java-coding",
+      "path": "java-coding",
+      "category": "general",
+      "description": "Java environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "mini-coder-max",
+      "path": "mini-coder-max",
+      "category": "general",
+      "description": "Autonomous coding agent that systematically plans, implements, reviews, and delivers high-quality code. Handles tasks of any complexity by following a structured workflow: planning → implementation → quality assurance → delivery. Trigger keywords: code, build, implement, create, develop, fix, refactor, architect.",
+      "is_nested": false
+    },
+    {
+      "name": "minimax-ai-agent-builder",
+      "path": "minimax-ai-agent-builder",
+      "category": "general",
+      "description": "A comprehensive guide to building your first AI agent using MiniMax. Use when users ask how to create AI agents, build autonomous assistants, develop LLM-powered applications, or get started with MiniMax agent development. Triggers include phrases like \"build an AI agent\", \"create a MiniMax agent\", \"how to make an agent\", \"AI agent tutorial\", \"MiniMax development guide\", or \"autonomous AI assistant setup\".",
+      "is_nested": false
+    },
+    {
+      "name": "minimax-all-in-one",
+      "path": "minimax-all-in-one",
+      "category": "general",
+      "description": "consolidated minimax ai skill pack for frontend, fullstack, android, ios, flutter, react native, shader, pdf, pptx, xlsx, docx, vision, sticker, music, playlist, buddy singing, and multimodal media workflows. use when a user wants one minimax-style skill for app development, ui engineering, document generation, spreadsheet work, presentation work, image or video or audio generation planning, shader effects, ocr, or cross-platform build guidance.",
+      "is_nested": false
+    },
+    {
+      "name": "nim-voxel-siege",
+      "path": "nim-voxel-siege",
+      "category": "general",
+      "description": "Extend NimVoxelEngine/NimVoxelEditor with a castle-siege voxel game — biome+castle world generation, wire/power contraptions, physics-based projectiles and cannons, and an AI-driven workbench block mixer that can create new block types on demand.",
+      "is_nested": false
+    },
+    {
+      "name": "nimhub",
+      "path": "nimhub",
+      "category": "general",
+      "description": "Skill migrated from user agent home. Original frontmatter missing.",
+      "is_nested": false
+    },
+    {
+      "name": "nodejs-coding",
+      "path": "nodejs-coding",
+      "category": "general",
+      "description": "Node.js environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "okf-knowledge",
+      "path": "okf-knowledge",
+      "category": "general",
+      "description": "Navigate and grow the Open Knowledge Format (OKF) knowledge base — a hierarchical, indexed library of coding lessons, patterns, and gotchas.",
+      "is_nested": false
+    },
+    {
+      "name": "ontology",
+      "path": "ontology",
+      "category": "general",
+      "description": "Typed knowledge graph for structured agent memory and composable skills. Use when creating/querying entities (Person, Project, Task, Event, Document), linking related objects, enforcing constraints, planning multi-step actions as graph transformations, or when skills need to share state. Trigger on \"remember\", \"what do I know about\", \"link X to Y\", \"show dependencies\", entity CRUD, or cross-skill data access.",
+      "is_nested": false
+    },
+    {
+      "name": "openai-docs",
+      "path": "openai-docs",
+      "category": "general",
+      "description": "Use when the user asks how to build with OpenAI products or APIs, asks about Codex itself or choosing Codex surfaces, needs up-to-date official documentation with citations, help choosing the latest model for a use case, latest/current/default-model prompting guidance, or model upgrade and prompt-upgrade guidance; use OpenAI docs MCP tools for non-Codex docs questions, use the Codex manual helper first for broad Codex self-knowledge, and restrict fallback browsing to official OpenAI domains.",
+      "is_nested": false
+    },
+    {
+      "name": "perl-coding",
+      "path": "perl-coding",
+      "category": "general",
+      "description": "Perl environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "php-coding",
+      "path": "php-coding",
+      "category": "general",
+      "description": "PHP environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "plugin-creator",
+      "path": "plugin-creator",
+      "category": "general",
+      "description": "Create and scaffold plugin directories for Codex with a required `.codex-plugin/plugin.json`, optional plugin folders/files, valid manifest defaults, and personal-marketplace entries by default. Use when Codex needs to create a new personal plugin, add optional plugin structure, generate or update marketplace entries for plugin ordering and availability metadata, or update an existing local plugin during development with the CLI-driven cachebuster and reinstall flow.",
+      "is_nested": false
+    },
+    {
+      "name": "project-development",
+      "path": "project-development",
+      "category": "general",
+      "description": "This skill should be used when the user asks to \"start an LLM project\", \"design batch pipeline\", \"evaluate task-model fit\", \"structure agent project\", or mentions pipeline architecture, agent-assisted development, cost estimation, or choosing between LLM and traditional approaches.",
+      "is_nested": false
+    },
+    {
+      "name": "project-doctor",
+      "path": "project-doctor",
+      "category": "general",
+      "description": "Inspect a project for missing files, broken paths, invalid configs, and startup blockers.",
+      "is_nested": false
+    },
+    {
+      "name": "python-coding",
+      "path": "python-coding",
+      "category": "general",
+      "description": "Python environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "receiving-code-review",
+      "path": "receiving-code-review",
+      "category": "general",
+      "description": "Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation",
+      "is_nested": false
+    },
+    {
+      "name": "redesign-existing-projects",
+      "path": "redesign-existing-projects",
+      "category": "general",
+      "description": "Skill migrated from user agent home. Original frontmatter missing.",
+      "is_nested": false
+    },
+    {
+      "name": "requesting-code-review",
+      "path": "requesting-code-review",
+      "category": "general",
+      "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements",
+      "is_nested": false
+    },
+    {
+      "name": "review-agent",
+      "path": "review-agent",
+      "category": "general",
+      "description": "Perform a read-only, defect-first review of a specified code change and return every actionable finding. Use when another agent delegates review of uncommitted changes, a base-branch diff, a commit, or custom review instructions.",
+      "is_nested": false
+    },
+    {
+      "name": "ruby-coding",
+      "path": "ruby-coding",
+      "category": "general",
+      "description": "Ruby environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "rust-coding",
+      "path": "rust-coding",
+      "category": "general",
+      "description": "Rust environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "rust-guidelines",
+      "path": "rust-guidelines",
+      "category": "general",
+      "description": "|",
+      "is_nested": false
+    },
+    {
+      "name": "self-improving-agent",
+      "path": "self-improving-agent",
+      "category": "general",
+      "description": "Captures learnings, errors, and corrections to enable continuous improvement. Use when commands fail, user corrects you, missing features are requested, APIs fail, knowledge is outdated, or better approaches are discovered.",
+      "is_nested": false
+    },
+    {
+      "name": "self-learning-brain",
+      "path": "self-learning-brain",
+      "category": "general",
+      "description": "Plug MiniMax Code into the MNNV (MiniMax neural network viewer) self-learning harness. Use when the user asks to start/stop/check the brain, log a tool call, search atoms, propose a new memory, edit a wiki card, or query what the brain has learned. Also use whenever you want MiniMax to remember a fact, decision, preference, or technique that the brain should retain across sessions.",
+      "is_nested": false
+    },
+    {
+      "name": "service-provider-platform",
+      "path": "service-provider-platform",
+      "category": "general",
+      "description": "End-to-end platform for local service businesses (roofers, movers, plumbers, HVAC, electricians, landscapers, cleaners, pest control, etc.): conversion-focused public website, lead capture forms, owner admin dashboard (edit content, view/manage leads), and AI chat assistant that updates site content safely. Use when building a complete business website with CMS, CRM-lite leads, backend admin, or AI-powered site editing for trades/services.",
+      "is_nested": false
+    },
+    {
+      "name": "skill-brain",
+      "path": "skill-brain",
+      "category": "general",
+      "description": "Control the MNNV (MiniMax neural network viewer) brain server from chat. The brain is a real 3D self-learning memory graph at `http://127.0.0.1:6789/neural.html` plus a wiki, a chat agent, and a voice interface — see `self-learning-brain` for the full CRUD/log/ search workflow. Use THIS skill when the user says `/skill-brain \u003cverb\u003e` or any of: `start the brain`, `boot MNNV`, `stop the brain`, `restart MNNV`, `brain status`, `open the neural view`, `open the wiki`, `open the logs`, `open quakes`, `brain help`, `remember \u003ctext\u003e`, `search the brain for \u003cq\u003e`, `pulse \u003ctext\u003e`, `think`, `brain speak \u003ctext\u003e`, `tail the brain log`, `install the brain watchdog`, `reuse skill \u003cid\u003e`, `log code edit \u003cfile\u003e`, `show brain activity`. The `\u003cverb\u003e` after `/skill-brain` picks the sub-procedure below. If the user wants to edit atoms, run searches, or read the wiki, switch to `self-learning-brain`.",
+      "is_nested": false
+    },
+    {
+      "name": "skill-creator",
+      "path": "skill-creator",
+      "category": "general",
+      "description": "Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations.",
+      "is_nested": false
+    },
+    {
+      "name": "skill-installer",
+      "path": "skill-installer",
+      "category": "general",
+      "description": "Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos).",
+      "is_nested": false
+    },
+    {
+      "name": "sql-coding",
+      "path": "sql-coding",
+      "category": "general",
+      "description": "SQL environment setup, syntax rules, best practices, and query optimization.",
+      "is_nested": false
+    },
+    {
+      "name": "subagent-driven-development",
+      "path": "subagent-driven-development",
+      "category": "general",
+      "description": "Use when executing implementation plans with independent tasks in the current session",
+      "is_nested": false
+    },
+    {
+      "name": "supercoder",
+      "path": "supercoder",
+      "category": "general",
+      "description": "\u003e-",
+      "is_nested": false
+    },
+    {
+      "name": "superpowers",
+      "path": "superpowers",
+      "category": "general",
+      "description": "\u003e-",
+      "is_nested": false
+    },
+    {
+      "name": "systematic-debugging",
+      "path": "systematic-debugging",
+      "category": "general",
+      "description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes",
+      "is_nested": false
+    },
+    {
+      "name": "test-driven-development",
+      "path": "test-driven-development",
+      "category": "general",
+      "description": "Use when implementing any feature or bugfix, before writing implementation code",
+      "is_nested": false
+    },
+    {
+      "name": "threejs-3d-model-editor",
+      "path": "threejs-3d-model-editor",
+      "category": "general",
+      "description": "Isolate and tweak one generated Three.js model module by name.",
+      "is_nested": false
+    },
+    {
+      "name": "threejs-3d-modeler",
+      "path": "threejs-3d-modeler",
+      "category": "general",
+      "description": "Create game-ready procedural Three.js models and matching model sets.",
+      "is_nested": false
+    },
+    {
+      "name": "threejs-tower-defense",
+      "path": "threejs-tower-defense",
+      "category": "general",
+      "description": "Build Three.js tower-defense games with practical gameplay rules, style presets, and model guidance.",
+      "is_nested": false
+    },
+    {
+      "name": "tower-defense-map-editor",
+      "path": "tower-defense-map-editor",
+      "category": "general",
+      "description": "Launch the visual tower-defense map, content, and modular tower editor.",
+      "is_nested": false
+    },
+    {
+      "name": "typescript-coding",
+      "path": "typescript-coding",
+      "category": "general",
+      "description": "TypeScript environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "ui-ux-designer",
+      "path": "ui-ux-designer",
+      "category": "general",
+      "description": "Expert UI/UX design assistant for creating design systems, wireframes, prototypes, and accessible interfaces. Use for design specifications, component libraries, color palettes, typography systems, design tokens, accessibility audits, and HTML/CSS implementations. Trigger keywords: design system, wireframe, prototype, color palette, typography, design tokens, accessibility audit, WCAG, component spec, UI, UX.",
+      "is_nested": false
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "path": "ui-ux-pro-max",
+      "category": "general",
+      "description": "UI/UX design intelligence expert for web and mobile applications. Use when designing interfaces, selecting color palettes, typography, visual styles, building landing pages, dashboards, or reviewing code for UX issues. Covers 50+ design styles, 97 color palettes, 57 font pairings, 99 UX guidelines, 25 chart types across 9 tech stacks (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui).",
+      "is_nested": false
+    },
+    {
+      "name": "universal-elite-agent",
+      "path": "universal-elite-agent",
+      "category": "general",
+      "description": "Universal high-performance AI skill for reasoning, writing,",
+      "is_nested": false
+    },
+    {
+      "name": "using-git-worktrees",
+      "path": "using-git-worktrees",
+      "category": "general",
+      "description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback",
+      "is_nested": false
+    },
+    {
+      "name": "using-superpowers",
+      "path": "using-superpowers",
+      "category": "general",
+      "description": "Use when starting any conversation - establishes how to find and use skills, requiring skill invocation before ANY response including clarifying questions",
+      "is_nested": false
+    },
+    {
+      "name": "verification-before-completion",
+      "path": "verification-before-completion",
+      "category": "general",
+      "description": "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always",
+      "is_nested": false
+    },
+    {
+      "name": "vibe-code-auditor",
+      "path": "vibe-code-auditor",
+      "category": "general",
+      "description": "Audit rapidly generated or AI-produced code for structural flaws, fragility, and production risks.",
+      "is_nested": false
+    },
+    {
+      "name": "vortex-os",
+      "path": "vortex-os",
+      "category": "general",
+      "description": "VORTEX-OS is a Hierarchical Autonomous Orchestration Engine designed to treat AI agency as a high-stakes, closed-loop corporate operation. Built exclusively to maximize the native capabilities of the MiniMax ecosystem, VORTEX-OS decouples strategic planning from operational labor. It enables you to ship complex, multi-modal projects — such as internal web apps, interactive sandboxed code, foley sound design, and procedural video — without ever relying on fragile external websites. TRIGGER when: building VibeOS modules, WebSims, interactive apps, narrative series, native Hailuo video pipelines, local ffmpeg audio processing, lore universe management (When Ocean Meets Sky, Book of the Fading Age), complex internal app scaffolding, procedural media generation entirely in-house with no external API keys. DO NOT TRIGGER when: simple one-line code requests, pure chat / Q\u0026A tasks, single-file edits with no cross-domain coordination, read-only research questions.",
+      "is_nested": false
+    },
+    {
+      "name": "vs-project-starter",
+      "path": "vs-project-starter",
+      "category": "general",
+      "description": "Interactive guide to create the right Visual Studio 2026 project from scratch, step by step.",
+      "is_nested": false
+    },
+    {
+      "name": "web-app-builder",
+      "path": "web-app-builder",
+      "category": "general",
+      "description": "Build and deploy modern web applications with React. Use when users ask to create a web app, build a React project, develop a frontend application, make a website, or set up a web project from scratch.",
+      "is_nested": false
+    },
+    {
+      "name": "web-coding",
+      "path": "web-coding",
+      "category": "general",
+      "description": "HTML, CSS, JavaScript environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "writing-plans",
+      "path": "writing-plans",
+      "category": "general",
+      "description": "Use when you have a spec or requirements for a multi-step task, before touching code",
+      "is_nested": false
+    },
+    {
+      "name": "writing-skills",
+      "path": "writing-skills",
+      "category": "general",
+      "description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment",
+      "is_nested": false
+    },
+    {
+      "name": "yuanbao",
+      "path": "yuanbao",
+      "category": "general",
+      "description": "Skill migrated from user agent home. Original frontmatter missing.",
+      "is_nested": false
+    },
+    {
+      "name": "agent-self-scheduling",
+      "path": "agent-orchestration/agent-self-scheduling",
+      "category": "agent-orchestration",
+      "description": "Make an AI agent run on a schedule, loop, or interval — cron, heartbeats, recurring autonomous checks. Use for \"run every N minutes\", \"schedule a task\", \"run on a loop\", \"heartbeat\". Covers external clocks (Claude Code, Codex, Pi) vs Hermes' built-in scheduler.",
+      "is_nested": true
+    },
+    {
+      "name": "airtable",
+      "path": "productivity/airtable",
+      "category": "productivity",
+      "description": "Airtable REST API via curl. Records CRUD, filters, upserts.",
+      "is_nested": true
+    },
+    {
+      "name": "apple-notes",
+      "path": "apple/apple-notes",
+      "category": "apple",
+      "description": "Manage Apple Notes via memo CLI: create, search, edit.",
+      "is_nested": true
+    },
+    {
+      "name": "apple-reminders",
+      "path": "apple/apple-reminders",
+      "category": "apple",
+      "description": "Apple Reminders via remindctl: add, list, complete.",
+      "is_nested": true
+    },
+    {
+      "name": "architecture-diagram",
+      "path": "creative/architecture-diagram",
+      "category": "creative",
+      "description": "Dark-themed SVG architecture/cloud/infra diagrams as HTML.",
+      "is_nested": true
+    },
+    {
+      "name": "archive__design-taste-frontend-v1",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/archive__design-taste-frontend-v1",
+      "category": ".deleted-duplicates",
+      "description": "ARCHIVED, superseded by `design-taste-frontend` (v2), which is the active default for landing pages, portfolios and redesigns. This is the dial-driven v1 taste-skill (DESIGN_VARIANCE / MOTION_INTENSITY / VISUAL_DENSITY), kept for projects that depend on its approach and for its AI-tells catalogue, performance guardrails and creative arsenal. Load it only when v1's specific behaviour is wanted; its rules have been rewritten to apply on demand rather than automatically, so it no longer conflicts with the harness doctrine.",
+      "is_nested": true
+    },
+    {
+      "name": "arxiv",
+      "path": "research/arxiv",
+      "category": "research",
+      "description": "Search arXiv papers by keyword, author, category, or ID.",
+      "is_nested": true
+    },
+    {
+      "name": "ascii-art",
+      "path": "creative/ascii-art",
+      "category": "creative",
+      "description": "ASCII art: pyfiglet, cowsay, boxes, image-to-ascii.",
+      "is_nested": true
+    },
+    {
+      "name": "ascii-video",
+      "path": "creative/ascii-video",
+      "category": "creative",
+      "description": "ASCII video: convert video/audio to colored ASCII MP4/GIF.",
+      "is_nested": true
+    },
+    {
+      "name": "audiocraft",
+      "path": "mlops/models/audiocraft",
+      "category": "mlops",
+      "description": "AudioCraft: MusicGen text-to-music, AudioGen text-to-sound.",
+      "is_nested": true
+    },
+    {
+      "name": "baoyu-article-illustrator",
+      "path": "creative/baoyu-article-illustrator",
+      "category": "creative",
+      "description": "Article illustrations: type × style × palette consistency.",
+      "is_nested": true
+    },
+    {
+      "name": "baoyu-comic",
+      "path": "creative/baoyu-comic",
+      "category": "creative",
+      "description": "Knowledge comics (知识漫画): educational, biography, tutorial.",
+      "is_nested": true
+    },
+    {
+      "name": "baoyu-infographic",
+      "path": "creative/baoyu-infographic",
+      "category": "creative",
+      "description": "Infographics: 21 layouts x 21 styles (信息图, 可视化).",
+      "is_nested": true
+    },
+    {
+      "name": "before-building",
+      "path": "thinking-and-docs/before-building",
+      "category": "thinking-and-docs",
+      "description": "Fire the moment the user proposes a build. Instantly surface the 1-3 consequential choices hidden in his idea. Can also be invoked with /before-building.",
+      "is_nested": true
+    },
+    {
+      "name": "blogwatcher",
+      "path": "research/blogwatcher",
+      "category": "research",
+      "description": "Monitor blogs and RSS/Atom feeds via blogwatcher-cli tool.",
+      "is_nested": true
+    },
+    {
+      "name": "brain-to-docs",
+      "path": "thinking-and-docs/brain-to-docs",
+      "category": "thinking-and-docs",
+      "description": "Use when the user wants to extract project vision, decisions, and preferences from his head into clear documentation (README + ADRs) through a back-and-forth Q\u0026A loop. Triggers on \"brain-to-docs\", \"build out the docs\", \"extract the vision\", \"let's document this project\".",
+      "is_nested": true
+    },
+    {
+      "name": "browser-harness",
+      "path": "research-and-web/browser-harness",
+      "category": "research-and-web",
+      "description": "Direct browser control via CDP. Use when the user wants to automate, scrape, test, or interact with web pages. Connects to the user's already-running Chrome.",
+      "is_nested": true
+    },
+    {
+      "name": "claude-code",
+      "path": "autonomous-ai-agents/claude-code",
+      "category": "autonomous-ai-agents",
+      "description": "Delegate coding to Claude Code CLI (features, PRs).",
+      "is_nested": true
+    },
+    {
+      "name": "claude-design",
+      "path": "creative/claude-design",
+      "category": "creative",
+      "description": "Design one-off HTML artifacts (landing, deck, prototype).",
+      "is_nested": true
+    },
+    {
+      "name": "cmux",
+      "path": "agent-orchestration/cmux",
+      "category": "agent-orchestration",
+      "description": "Control the cmux macOS terminal app (CLI + socket API) — cmux workspaces, panes, surfaces, browser automation, notifications, settings, hooks. MUST be read before running any `cmux` command. Trigger ONLY when the user explicitly says \"cmux\" — a cmux pane, cmux workspace, cmux surface, or an agent running in cmux. Do NOT trigger on generic mentions of \"workspace\", \"pane\", \"the other agent\", or \"delegate\" when cmux is not named — workspaces in tmux, Ghostty, herdr, VS Code, etc. are NOT cmux. macOS only (14.0+).",
+      "is_nested": true
+    },
+    {
+      "name": "cobol",
+      "path": "codebase-starters/cobol",
+      "category": "codebase-starters",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "codebase-inspection",
+      "path": "github/codebase-inspection",
+      "category": "github",
+      "description": "Inspect codebases w/ pygount: LOC, languages, ratios.",
+      "is_nested": true
+    },
+    {
+      "name": "codex",
+      "path": "autonomous-ai-agents/codex",
+      "category": "autonomous-ai-agents",
+      "description": "Delegate coding to OpenAI Codex CLI (features, PRs).",
+      "is_nested": true
+    },
+    {
+      "name": "codex-subagent",
+      "path": "agent-orchestration/codex-subagent",
+      "category": "agent-orchestration",
+      "description": "Launch OpenAI Codex CLI as a subagent (ChatGPT subscription auth, no API key). Use when delegating a self-contained coding task to Codex from another agent — parallel implementation work, a second opinion, or an independent verification pass.",
+      "is_nested": true
+    },
+    {
+      "name": "comfyui",
+      "path": "creative/comfyui",
+      "category": "creative",
+      "description": "Generate images, video, and audio with ComfyUI — install, launch, manage nodes/models, run workflows with parameter injection. Uses the official comfy-cli for lifecycle and direct REST/WebSocket API for execution.",
+      "is_nested": true
+    },
+    {
+      "name": "corral-launch-agents",
+      "path": "agent-orchestration/corral-launch-agents",
+      "category": "agent-orchestration",
+      "description": "Launch new CLI coding agents through Corral Design 1, or correctly reopen existing agent sessions inside a Corral-active Herdr repository. Use when the user asks to launch, spawn, batch-start, reopen, relaunch, or resume agents. New launches create Corral-owned tasks; resumptions reuse existing worktrees and sessions.",
+      "is_nested": true
+    },
+    {
+      "name": "cpp",
+      "path": "codebase-starters/cpp",
+      "category": "codebase-starters",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "create-readonly-db-role",
+      "path": "ops-and-setup/create-readonly-db-role",
+      "category": "ops-and-setup",
+      "description": "Provision a hardened SELECT-only Postgres role so AI agents can safely read a production database. Works on Supabase and any Postgres. Use when the user wants agents to query prod data, says \"read-only role\", \"safe prod DB access for agents\", or is tired of running SQL by hand for agents. Differentiator: this skill CREATES the role and wiring; day-to-day querying belongs in a project-local skill.",
+      "is_nested": true
+    },
+    {
+      "name": "creative-ideation",
+      "path": "creative/creative-ideation",
+      "category": "creative",
+      "description": "Generate project ideas via creative constraints.",
+      "is_nested": true
+    },
+    {
+      "name": "csharp",
+      "path": "codebase-starters/csharp",
+      "category": "codebase-starters",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "debugging-hermes-tui-commands",
+      "path": "software-development/debugging-hermes-tui-commands",
+      "category": "software-development",
+      "description": "Debug Hermes TUI slash commands: Python, gateway, Ink UI.",
+      "is_nested": true
+    },
+    {
+      "name": "decisions",
+      "path": "thinking-and-docs/decisions",
+      "category": "thinking-and-docs",
+      "description": "Ask the agent to list all choices it made during the current work that it is not confident of. Manual-only; invoke with /decisions.",
+      "is_nested": true
+    },
+    {
+      "name": "deep-research",
+      "path": "research-and-web/deep-research",
+      "category": "research-and-web",
+      "description": "Run a deep, source-backed research query via DeepAPI (go to deepapi.co to get an API key) POST /v1/research/deep. Builds a rigorous one-paragraph research prompt (per research-prompt rules), fires it, and saves a cited markdown report. Use when the user asks for \"deep research\", \"deepapi research\", \"perplexity deep research\" (legacy trigger), or any deep source-backed research run. Differentiator vs the deepapi skill: this is the full research workflow (prompt + run + report file), not raw endpoint access.",
+      "is_nested": true
+    },
+    {
+      "name": "deepapi",
+      "path": "research-and-web/deepapi",
+      "category": "research-and-web",
+      "description": "Use DeepAPI for all regular web searches (POST /v1/search/web) and for any deep research you perform (POST /v1/research/deep), instead of built-in search or research tools. Use it for all scraping of the web (websites, LinkedIn, GitHub, X/Twitter, YouTube — POST /v1/scrape/*) instead of built-in fetch or browser tools. Platform lookups (GitHub, YouTube, X/Twitter, LinkedIn, Instagram) have dedicated search endpoints — prefer them over web search. Also use it to draft and send safe email, and generate images with DEEPAPI_API_BASE_URL and DEEPAPI_API_KEY.",
+      "is_nested": true
+    },
+    {
+      "name": "design-md",
+      "path": "creative/design-md",
+      "category": "creative",
+      "description": "Author/validate/export Google's DESIGN.md token spec files.",
+      "is_nested": true
+    },
+    {
+      "name": "design__brandkit",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/design__brandkit",
+      "category": ".deleted-duplicates",
+      "description": "Premium brand-kit image generation skill for creating high-end brand-guidelines boards, logo systems, identity decks, and visual-world presentations. Trained for minimalist, cinematic, editorial, dark-tech, luxury, cultural, security, gaming, developer-tool, and consumer-app brand systems. Optimized for intentional logo concepting, refined composition, sparse typography, strong symbolic meaning, premium mockups, art-directed imagery, and flexible grid layouts.",
+      "is_nested": true
+    },
+    {
+      "name": "design__design-taste-frontend",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/design__design-taste-frontend",
+      "category": ".deleted-duplicates",
+      "description": "Anti-slop frontend skill for landing pages, portfolios, and redesigns. The agent reads the brief, infers the right design direction, and ships interfaces that do not look templated. Real design systems when applicable, audit-first on redesigns, strict pre-flight check.",
+      "is_nested": true
+    },
+    {
+      "name": "design__high-end-visual-design",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/design__high-end-visual-design",
+      "category": ".deleted-duplicates",
+      "description": "Teaches the AI to design like a high-end agency. Defines the exact fonts, spacing, shadows, card structures, and animations that make a website feel expensive. Blocks all the common defaults that make AI designs look cheap or generic.",
+      "is_nested": true
+    },
+    {
+      "name": "design__redesign-existing-projects",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/design__redesign-existing-projects",
+      "category": ".deleted-duplicates",
+      "description": "Upgrades existing websites and apps to premium quality. Audits current design, identifies generic AI patterns, and applies high-end design standards without breaking functionality. Works with any CSS framework or vanilla CSS.",
+      "is_nested": true
+    },
+    {
+      "name": "dspy",
+      "path": "mlops/research/dspy",
+      "category": "mlops",
+      "description": "DSPy: declarative LM programs, auto-optimize prompts, RAG.",
+      "is_nested": true
+    },
+    {
+      "name": "effective-agent-skills",
+      "path": "skill-authoring/effective-agent-skills",
+      "category": "skill-authoring",
+      "description": "How to write effective agent skills — what to do, what not to do, anatomy, progressive disclosure, design patterns, anti-patterns, testing, security. Read this whenever a skill (Claude Skill, Agent Skill, SKILL.md) is being created, edited, reviewed, or debugged. Use when the user says \"create a skill\", \"new skill\", \"update this skill\", \"improve a skill\", \"why isn't my skill triggering\", or anything else involving authoring or editing SKILL.md files.",
+      "is_nested": true
+    },
+    {
+      "name": "excalidraw",
+      "path": "creative/excalidraw",
+      "category": "creative",
+      "description": "Hand-drawn Excalidraw JSON diagrams (arch, flow, seq).",
+      "is_nested": true
+    },
+    {
+      "name": "fable-review",
+      "path": "agent-orchestration/fable-review",
+      "category": "agent-orchestration",
+      "description": "Launch a Fable 5 Max 1M subagent to do a deep, neutral senior-developer review of the current work and report its findings back verbatim. Use when the user says \"/fable-review\", \"fable review\", or asks for Fable to review the code. Differentiator: reviewer model is Fable 5 Max 1M — for a GPT reviewer use gpt-review.",
+      "is_nested": true
+    },
+    {
+      "name": "fable-safe-prompt",
+      "path": "agent-orchestration/fable-safe-prompt",
+      "category": "agent-orchestration",
+      "description": "Rewrite a user's prompt to reduce the chance it trips Claude Fable 5's server-side safety classifiers (cyber/bio guardrails that force-route to Opus 4.8 or return stop_reason \"refusal\"). Use when the user hands you a prompt that touches cybersecurity, auth, exploits, malware, pentesting, or other dual-use topics and asks to make it \"Fable-safe\", \"guardrail-safe\", \"won't get flagged/refused/downgraded\", or to rewrite it so Fable 5 won't block it.",
+      "is_nested": true
+    },
+    {
+      "name": "findmy",
+      "path": "apple/findmy",
+      "category": "apple",
+      "description": "Track Apple devices/AirTags via FindMy.app on macOS.",
+      "is_nested": true
+    },
+    {
+      "name": "fireflies-transcript",
+      "path": "research-and-web/fireflies-transcript",
+      "category": "research-and-web",
+      "description": "Pull raw meeting transcripts from David''s Fireflies.ai notetaker via its GraphQL API, using the key saved globally on this MacBook. Use when the user wants a call transcript, meeting notes, \"what was said on the call\", onboarding-call transcripts, or Fireflies data. Differentiator: Fireflies meeting recordings only — for YouTube videos use youtube-transcript.",
+      "is_nested": true
+    },
+    {
+      "name": "gamedev__html-game-builder",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/gamedev__html-game-builder",
+      "category": ".deleted-duplicates",
+      "description": "Build a small, self-contained HTML5 canvas game in a single file.",
+      "is_nested": true
+    },
+    {
+      "name": "gamedev__nim-voxel-siege",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/gamedev__nim-voxel-siege",
+      "category": ".deleted-duplicates",
+      "description": "Extend NimVoxelEngine/NimVoxelEditor with a castle-siege voxel game — biome+castle world generation, wire/power contraptions, physics-based projectiles and cannons, and an AI-driven workbench block mixer that can create new block types on demand.",
+      "is_nested": true
+    },
+    {
+      "name": "gamedev__threejs-3d-model-editor",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/gamedev__threejs-3d-model-editor",
+      "category": ".deleted-duplicates",
+      "description": "Isolate and tweak one generated Three.js model module by name.",
+      "is_nested": true
+    },
+    {
+      "name": "gamedev__threejs-3d-modeler",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/gamedev__threejs-3d-modeler",
+      "category": ".deleted-duplicates",
+      "description": "Create game-ready procedural Three.js models and matching model sets.",
+      "is_nested": true
+    },
+    {
+      "name": "gamedev__threejs-tower-defense",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/gamedev__threejs-tower-defense",
+      "category": ".deleted-duplicates",
+      "description": "Build Three.js tower-defense games with practical gameplay rules, style presets, and model guidance.",
+      "is_nested": true
+    },
+    {
+      "name": "gamedev__tower-defense-map-editor",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/gamedev__tower-defense-map-editor",
+      "category": ".deleted-duplicates",
+      "description": "Launch the visual tower-defense map, content, and modular tower editor.",
+      "is_nested": true
+    },
+    {
+      "name": "gif-search",
+      "path": "media/gif-search",
+      "category": "media",
+      "description": "Search/download GIFs from Tenor via curl + jq.",
+      "is_nested": true
+    },
+    {
+      "name": "git-worktree",
+      "path": "agent-orchestration/git-worktree",
+      "category": "agent-orchestration",
+      "description": "Use git worktrees to run multiple coding agents in parallel on one repo without collisions. Use when starting a task in a shared repo, when the user says \"worktree\", \"parallel agents\", \"one worktree per task\", or when agents keep overwriting each other's changes. Covers creating worktrees, making them as complete as the main checkout (.env files, dependencies, databases, ports), merging back, and cleanup.",
+      "is_nested": true
+    },
+    {
+      "name": "github-auth",
+      "path": "github/github-auth",
+      "category": "github",
+      "description": "GitHub auth setup: HTTPS tokens, SSH keys, gh CLI login.",
+      "is_nested": true
+    },
+    {
+      "name": "github-code-review",
+      "path": "github/github-code-review",
+      "category": "github",
+      "description": "Review PRs: diffs, inline comments via gh or REST.",
+      "is_nested": true
+    },
+    {
+      "name": "github-issues",
+      "path": "github/github-issues",
+      "category": "github",
+      "description": "Create, triage, label, assign GitHub issues via gh or REST.",
+      "is_nested": true
+    },
+    {
+      "name": "github-outside-sandbox",
+      "path": "ops-and-setup/github-outside-sandbox",
+      "category": "ops-and-setup",
+      "description": "Run Git and GitHub CLI commands through the host context when sandboxing blocks Keychain authentication, network access, or .git writes. Use for gh auth, repository or PR operations, and git index.lock or permission failures. Handles execution context only, not GitHub workflow design.",
+      "is_nested": true
+    },
+    {
+      "name": "github-pr-workflow",
+      "path": "github/github-pr-workflow",
+      "category": "github",
+      "description": "GitHub PR lifecycle: branch, commit, open, CI, merge.",
+      "is_nested": true
+    },
+    {
+      "name": "github-repo-management",
+      "path": "github/github-repo-management",
+      "category": "github",
+      "description": "Clone/create/fork repos; manage remotes, releases.",
+      "is_nested": true
+    },
+    {
+      "name": "global-agent-guardrails",
+      "path": "ops-and-setup/global-agent-guardrails",
+      "category": "ops-and-setup",
+      "description": "One shared denylist of catastrophic shell commands (rm -rf on / or ~, dd/mkfs, sudo rm, fork bombs, curl|sh, git push --force, gh repo delete) enforced as a PreToolUse/pre-exec guard across every AI coding agent on the machine — Cursor, Claude Code, Codex, OpenCode, Pi, Hermes, Grok, Droid, Devin. Use when adding or tuning blocked-command patterns, wiring the guard into a new agent or a new machine, debugging why a command was (or was not) blocked, or when the user mentions command guard, guardrails, dangerous command hook, or PreToolUse safety.",
+      "is_nested": true
+    },
+    {
+      "name": "go",
+      "path": "codebase-starters/go",
+      "category": "codebase-starters",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "goal-loop",
+      "path": "agent-orchestration/goal-loop",
+      "category": "agent-orchestration",
+      "description": "Explain and write effective instructions for the `/goal` feature — the persistent self-checking agent loop (plan → act → test → review → iterate), available in agents like Codex, Claude Code, and Hermes Agent. Use when the user mentions `/goal`, \"goal loop\", \"Ralph loop\", wants to kick off a long-running autonomous agent run, asks how to write a goal prompt, or wants a one-paragraph goal instruction drafted.",
+      "is_nested": true
+    },
+    {
+      "name": "google-workspace",
+      "path": "productivity/google-workspace",
+      "category": "productivity",
+      "description": "Gmail, Calendar, Drive, Docs, Sheets via gws CLI or Python.",
+      "is_nested": true
+    },
+    {
+      "name": "gpt-review",
+      "path": "agent-orchestration/gpt-review",
+      "category": "agent-orchestration",
+      "description": "Launch a GPT 5.6 Sol Max subagent to do a deep, neutral senior-developer review of the current work and report its findings back verbatim. Use when the user says \"/gpt-review\", \"gpt review\", or asks for GPT to review the code. Differentiator: reviewer model is GPT 5.6 Sol Max — for a Fable reviewer use fable-review.",
+      "is_nested": true
+    },
+    {
+      "name": "handoff",
+      "path": "agent-orchestration/handoff",
+      "category": "agent-orchestration",
+      "description": "Compact the current conversation into a single, detailed handoff message — everything that happened, why it happened, and what's left — output in a code block so it can be copy-pasted into a fresh agent session. Use when hitting context limits, switching focus, ending a work session, or partitioning a task across fresh contexts.",
+      "is_nested": true
+    },
+    {
+      "name": "heartmula",
+      "path": "media/heartmula",
+      "category": "media",
+      "description": "HeartMuLa: Suno-like song generation from lyrics + tags.",
+      "is_nested": true
+    },
+    {
+      "name": "herdr",
+      "path": "agent-orchestration/herdr",
+      "category": "agent-orchestration",
+      "description": "Operate and coordinate AI agents running inside Herdr in Ghostty. Use when the user says \"Use the Herdr skill,\" mentions Herdr, or asks to inspect, message, wait for, or coordinate agents in a Herdr workspace. Herdr-specific; do not use for cmux or ordinary terminal sessions.",
+      "is_nested": true
+    },
+    {
+      "name": "hermes-agent",
+      "path": "autonomous-ai-agents/hermes-agent",
+      "category": "autonomous-ai-agents",
+      "description": "Configure, extend, or contribute to Hermes Agent.",
+      "is_nested": true
+    },
+    {
+      "name": "hermes-agent-skill-authoring",
+      "path": "software-development/hermes-agent-skill-authoring",
+      "category": "software-development",
+      "description": "Author in-repo SKILL.md: frontmatter, validator, structure.",
+      "is_nested": true
+    },
+    {
+      "name": "himalaya",
+      "path": "email/himalaya",
+      "category": "email",
+      "description": "Himalaya CLI: IMAP/SMTP email from terminal.",
+      "is_nested": true
+    },
+    {
+      "name": "html-js-css",
+      "path": "languages/html-js-css",
+      "category": "languages",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "htmx",
+      "path": "languages/htmx",
+      "category": "languages",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "huggingface-hub",
+      "path": "mlops/huggingface-hub",
+      "category": "mlops",
+      "description": "HuggingFace hf CLI: search/download/upload models, datasets.",
+      "is_nested": true
+    },
+    {
+      "name": "humanizer",
+      "path": "creative/humanizer",
+      "category": "creative",
+      "description": "Humanize text: strip AI-isms and add real voice.",
+      "is_nested": true
+    },
+    {
+      "name": "imessage",
+      "path": "apple/imessage",
+      "category": "apple",
+      "description": "Send and receive iMessages/SMS via the imsg CLI on macOS.",
+      "is_nested": true
+    },
+    {
+      "name": "jsx-react",
+      "path": "languages/jsx-react",
+      "category": "languages",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "jupyter-live-kernel",
+      "path": "data-science/jupyter-live-kernel",
+      "category": "data-science",
+      "description": "Iterative Python via live Jupyter kernel (hamelnb).",
+      "is_nested": true
+    },
+    {
+      "name": "kanban-codex-lane",
+      "path": "autonomous-ai-agents/kanban-codex-lane",
+      "category": "autonomous-ai-agents",
+      "description": "Use when a Hermes Kanban worker wants to run Codex CLI as an isolated implementation lane while Hermes keeps ownership of task lifecycle, reconciliation, testing, and handoff.",
+      "is_nested": true
+    },
+    {
+      "name": "kanban-orchestrator",
+      "path": "devops/kanban-orchestrator",
+      "category": "devops",
+      "description": "Decomposition playbook + anti-temptation rules for an orchestrator profile routing work through Kanban. The \"don't do the work yourself\" rule and the basic lifecycle are auto-injected into every kanban worker's system prompt; this skill is the deeper playbook when you're specifically playing the orchestrator role.",
+      "is_nested": true
+    },
+    {
+      "name": "kanban-worker",
+      "path": "devops/kanban-worker",
+      "category": "devops",
+      "description": "Pitfalls, examples, and edge cases for Hermes Kanban workers. The lifecycle itself is auto-injected into every worker's system prompt as KANBAN_GUIDANCE (from agent/prompt_builder.py); this skill is what you load when you want deeper detail on specific scenarios.",
+      "is_nested": true
+    },
+    {
+      "name": "kotlin",
+      "path": "languages/kotlin",
+      "category": "languages",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "languages__bash-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__bash-coding",
+      "category": ".deleted-duplicates",
+      "description": "Bash/Shell scripting environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__cobol-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__cobol-coding",
+      "category": ".deleted-duplicates",
+      "description": "COBOL environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__cpp-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__cpp-coding",
+      "category": ".deleted-duplicates",
+      "description": "C/C++ environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__csharp-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__csharp-coding",
+      "category": ".deleted-duplicates",
+      "description": "C# / .NET environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__go-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__go-coding",
+      "category": ".deleted-duplicates",
+      "description": "Go environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__java-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__java-coding",
+      "category": ".deleted-duplicates",
+      "description": "Java environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__nodejs-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__nodejs-coding",
+      "category": ".deleted-duplicates",
+      "description": "Node.js environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__perl-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__perl-coding",
+      "category": ".deleted-duplicates",
+      "description": "Perl environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__php-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__php-coding",
+      "category": ".deleted-duplicates",
+      "description": "PHP environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__python-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__python-coding",
+      "category": ".deleted-duplicates",
+      "description": "Python environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__ruby-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__ruby-coding",
+      "category": ".deleted-duplicates",
+      "description": "Ruby environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__rust-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__rust-coding",
+      "category": ".deleted-duplicates",
+      "description": "Rust environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__sql-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__sql-coding",
+      "category": ".deleted-duplicates",
+      "description": "SQL environment setup, syntax rules, best practices, and query optimization.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__typescript-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__typescript-coding",
+      "category": ".deleted-duplicates",
+      "description": "TypeScript environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "languages__web-coding",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/languages__web-coding",
+      "category": ".deleted-duplicates",
+      "description": "HTML, CSS, JavaScript environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": true
+    },
+    {
+      "name": "launch-subagent",
+      "path": "agent-orchestration/launch-subagent",
+      "category": "agent-orchestration",
+      "description": "Read this BEFORE launching any subagent (Task tool, background agents, parallel agents, best-of-N, delegating work to another agent). Hard model rules for subagents plus consensus principles for using them well. Triggers: launch a subagent, spawn agents, run agents in parallel, delegate to a subagent.",
+      "is_nested": true
+    },
+    {
+      "name": "level-up",
+      "path": "thinking-and-docs/level-up",
+      "category": "thinking-and-docs",
+      "description": "Gauge the user''s technical + product knowledge through 7 adaptive questions, log verbatim answers with honest ratings, and grow a learning plan from the gaps found. Use when the user says \"level up\", \"level-up session\", \"quiz me\", \"gauge my knowledge\", or wants a new assessment round. Differentiator: this finds and maps gaps; the `teach` skill delivers lessons on them.",
+      "is_nested": true
+    },
+    {
+      "name": "linear",
+      "path": "productivity/linear",
+      "category": "productivity",
+      "description": "Linear: manage issues, projects, teams via GraphQL + curl.",
+      "is_nested": true
+    },
+    {
+      "name": "llama-cpp",
+      "path": "mlops/inference/llama-cpp",
+      "category": "mlops",
+      "description": "llama.cpp local GGUF inference + HF Hub model discovery.",
+      "is_nested": true
+    },
+    {
+      "name": "llm-wiki",
+      "path": "research/llm-wiki",
+      "category": "research",
+      "description": "Karpathy's LLM Wiki: build/query interlinked markdown KB.",
+      "is_nested": true
+    },
+    {
+      "name": "lm-evaluation-harness",
+      "path": "mlops/evaluation/lm-evaluation-harness",
+      "category": "mlops",
+      "description": "lm-eval-harness: benchmark LLMs (MMLU, GSM8K, etc.).",
+      "is_nested": true
+    },
+    {
+      "name": "macos-computer-use",
+      "path": "apple/macos-computer-use",
+      "category": "apple",
+      "description": "|",
+      "is_nested": true
+    },
+    {
+      "name": "manim-video",
+      "path": "creative/manim-video",
+      "category": "creative",
+      "description": "Manim CE animations: 3Blue1Brown math/algo videos.",
+      "is_nested": true
+    },
+    {
+      "name": "maps",
+      "path": "productivity/maps",
+      "category": "productivity",
+      "description": "Geocode, POIs, routes, timezones via OpenStreetMap/OSRM.",
+      "is_nested": true
+    },
+    {
+      "name": "minecraft-modpack-server",
+      "path": "gaming/minecraft-modpack-server",
+      "category": "gaming",
+      "description": "Host modded Minecraft servers (CurseForge, Modrinth).",
+      "is_nested": true
+    },
+    {
+      "name": "nano-pdf",
+      "path": "productivity/nano-pdf",
+      "category": "productivity",
+      "description": "Edit PDF text/typos/titles via nano-pdf CLI (NL prompts).",
+      "is_nested": true
+    },
+    {
+      "name": "native-mcp",
+      "path": "mcp/native-mcp",
+      "category": "mcp",
+      "description": "MCP client: connect servers, register tools (stdio/HTTP).",
+      "is_nested": true
+    },
+    {
+      "name": "next-decision",
+      "path": "thinking-and-docs/next-decision",
+      "category": "thinking-and-docs",
+      "description": "Drill open decisions one at a time — present the most important decision not yet clarified, give the top four choices, state a preference, ask the user. Use when the user says \"next decision\", \"one decision at a time\", or a plan has several unresolved choices. Differentiator: forward-looking; the decisions skill is retrospective (choices already made). Can be invoked with /next-decision.",
+      "is_nested": true
+    },
+    {
+      "name": "node-inspect-debugger",
+      "path": "software-development/node-inspect-debugger",
+      "category": "software-development",
+      "description": "Debug Node.js via --inspect + Chrome DevTools Protocol CLI.",
+      "is_nested": true
+    },
+    {
+      "name": "nodejs",
+      "path": "codebase-starters/nodejs",
+      "category": "codebase-starters",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "notion",
+      "path": "productivity/notion",
+      "category": "productivity",
+      "description": "Notion API + ntn CLI: pages, databases, markdown, Workers.",
+      "is_nested": true
+    },
+    {
+      "name": "obliteratus",
+      "path": "mlops/inference/obliteratus",
+      "category": "mlops",
+      "description": "OBLITERATUS: abliterate LLM refusals (diff-in-means).",
+      "is_nested": true
+    },
+    {
+      "name": "obsidian",
+      "path": "note-taking/obsidian",
+      "category": "note-taking",
+      "description": "Read, search, create, and edit notes in the Obsidian vault.",
+      "is_nested": true
+    },
+    {
+      "name": "ocr-and-documents",
+      "path": "productivity/ocr-and-documents",
+      "category": "productivity",
+      "description": "Extract text from PDFs/scans (pymupdf, marker-pdf).",
+      "is_nested": true
+    },
+    {
+      "name": "online-shopping",
+      "path": "research-and-web/online-shopping",
+      "category": "research-and-web",
+      "description": "Research any online purchase with DeepAPI — fair-price checks, best deals, where to buy, shop trust. Load whenever the user is shopping or buying anything online: mentions buying a product, comparing prices, \"is this a good price\", \"where can I get X\", or attaches a product photo or listing screenshot. Research only — never places orders.",
+      "is_nested": true
+    },
+    {
+      "name": "opencode",
+      "path": "autonomous-ai-agents/opencode",
+      "category": "autonomous-ai-agents",
+      "description": "Delegate coding to OpenCode CLI (features, PR review).",
+      "is_nested": true
+    },
+    {
+      "name": "openhue",
+      "path": "smart-home/openhue",
+      "category": "smart-home",
+      "description": "Control Philips Hue lights, scenes, rooms via OpenHue CLI.",
+      "is_nested": true
+    },
+    {
+      "name": "p5js",
+      "path": "creative/p5js",
+      "category": "creative",
+      "description": "p5.js sketches: gen art, shaders, interactive, 3D.",
+      "is_nested": true
+    },
+    {
+      "name": "php",
+      "path": "codebase-starters/php",
+      "category": "codebase-starters",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "pi-web-search",
+      "path": "research-and-web/pi-web-search",
+      "category": "research-and-web",
+      "description": "ONLY for Pi Agents — all other agents have their own web tools. How Pi accesses the web via the pi-web-access package — search, fetch URLs/PDFs/YouTube/GitHub. Use whenever a Pi task needs current info, docs, news, prices, or content from a specific URL.",
+      "is_nested": true
+    },
+    {
+      "name": "pixel-art",
+      "path": "creative/pixel-art",
+      "category": "creative",
+      "description": "Pixel art w/ era palettes (NES, Game Boy, PICO-8).",
+      "is_nested": true
+    },
+    {
+      "name": "plan",
+      "path": "software-development/plan",
+      "category": "software-development",
+      "description": "Plan mode: write markdown plan to .hermes/plans/, no exec.",
+      "is_nested": true
+    },
+    {
+      "name": "pokemon-player",
+      "path": "gaming/pokemon-player",
+      "category": "gaming",
+      "description": "Play Pokemon via headless emulator + RAM reads.",
+      "is_nested": true
+    },
+    {
+      "name": "polymarket",
+      "path": "research/polymarket",
+      "category": "research",
+      "description": "Query Polymarket: markets, prices, orderbooks, history.",
+      "is_nested": true
+    },
+    {
+      "name": "popular-web-designs",
+      "path": "creative/popular-web-designs",
+      "category": "creative",
+      "description": "54 real design systems (Stripe, Linear, Vercel) as HTML/CSS.",
+      "is_nested": true
+    },
+    {
+      "name": "powerpoint",
+      "path": "productivity/powerpoint",
+      "category": "productivity",
+      "description": "Create, read, edit .pptx decks, slides, notes, templates.",
+      "is_nested": true
+    },
+    {
+      "name": "pretext",
+      "path": "creative/pretext",
+      "category": "creative",
+      "description": "Use when building creative browser demos with @chenglou/pretext — DOM-free text layout for ASCII art, typographic flow around obstacles, text-as-geometry games, kinetic typography, and text-powered generative art. Produces single-file HTML demos by default.",
+      "is_nested": true
+    },
+    {
+      "name": "prod-push",
+      "path": "ops-and-setup/prod-push",
+      "category": "ops-and-setup",
+      "description": "Push to GitHub main and babysit the change until it is verifiably live in production, fixing CI and deploy failures along the way. Use when the user says \"push\", \"push to github\", \"push to prod\", \"ship it\", or \"deploy\". Differentiator: pushing requires the user''s explicit go-ahead; this is the procedure for AFTER they give it (this repo''s CI gate + Vercel promotion).",
+      "is_nested": true
+    },
+    {
+      "name": "prompt-me",
+      "path": "thinking-and-docs/prompt-me",
+      "category": "thinking-and-docs",
+      "description": "Prompt the user with pointed questions to extract what is in his head about a project — remaining work, what is being avoided, what really matters, what does not. Use when the user says \"prompt me\", \"ask me questions\", or wants the agent to figure out priorities by questioning him.",
+      "is_nested": true
+    },
+    {
+      "name": "push-skill-to-github",
+      "path": "skill-authoring/push-skill-to-github",
+      "category": "skill-authoring",
+      "description": "Commit and push agent-skill changes to the user's private skills GitHub repo (private-skills-repo, rooted at ~/.agents). Use after creating or updating any skill, when the user says \"push the skill\", \"push skills to github\", \"save the skill to my repo\", or \"update the skills repo\". Handles staging, committing, and pushing directly in the current shell — works in any agent, no cmux needed.",
+      "is_nested": true
+    },
+    {
+      "name": "python",
+      "path": "codebase-starters/python",
+      "category": "codebase-starters",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "python-debugpy",
+      "path": "software-development/python-debugpy",
+      "category": "software-development",
+      "description": "Debug Python: pdb REPL + debugpy remote (DAP).",
+      "is_nested": true
+    },
+    {
+      "name": "read-all-adrs",
+      "path": "thinking-and-docs/read-all-adrs",
+      "category": "thinking-and-docs",
+      "description": "Read every ADR markdown file in the project's docs/adr/ folder so you have full context on past decisions. Use only when the user explicitly calls it.",
+      "is_nested": true
+    },
+    {
+      "name": "read-prod-database",
+      "path": "ops-and-setup/read-prod-database",
+      "category": "ops-and-setup",
+      "description": "Query the production Supabase Postgres read-only via psql using the SELECT-only agents_readonly role. Use when debugging prod issues, investigating a user report, checking real usage/billing/retention numbers, or verifying data actually landed in prod. Usage/PMF numbers default to customer-only scope (David \u0026 team excluded, ADR 0175) and every answer must state which scope it used. Differentiator: this is LIVE prod data, read-only; for tests use the local Docker harness (npm run test:db) instead.",
+      "is_nested": true
+    },
+    {
+      "name": "remind",
+      "path": "thinking-and-docs/remind",
+      "category": "thinking-and-docs",
+      "description": "Rewrite the last response simpler and shorter in plain English, prefixed with a 3-5 sentence TLDR of the conversation so far. Manual-only, invoked as /remind.",
+      "is_nested": true
+    },
+    {
+      "name": "research-paper-writing",
+      "path": "research/research-paper-writing",
+      "category": "research",
+      "description": "Write ML papers for NeurIPS/ICML/ICLR: design→submit.",
+      "is_nested": true
+    },
+    {
+      "name": "research-prompt",
+      "path": "research-and-web/research-prompt",
+      "category": "research-and-web",
+      "description": "Write a single-paragraph Deep Research prompt to hand to a human researcher (or a deep-research AI). Use when the user wants a research brief, a \"deep research prompt\", a one-paragraph task for a researcher, or asks \"what should our researcher look for\". Produces ONE tight paragraph with full context, numbered sub-questions, and per-finding output format.",
+      "is_nested": true
+    },
+    {
+      "name": "ruby",
+      "path": "codebase-starters/ruby",
+      "category": "codebase-starters",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "run-deep-swe",
+      "path": "agent-orchestration/run-deep-swe",
+      "category": "agent-orchestration",
+      "description": "Score any AI model on the DeepSWE coding-agent benchmark via the OpenRouter API. Use when the user wants an independent, reproducible coding-agent eval — \"run DeepSWE\", \"benchmark this model on DeepSWE\", \"score model X on the coding benchmark\", \"test a model via OpenRouter on DeepSWE\", or to verify vendor-reported coding scores. Covers setup, the OpenRouter wiring for mini-swe-agent, single-task / subset / full 113-task runs, and leaderboard submission.",
+      "is_nested": true
+    },
+    {
+      "name": "rust",
+      "path": "codebase-starters/rust",
+      "category": "codebase-starters",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "save-idea",
+      "path": "thinking-and-docs/save-idea",
+      "category": "thinking-and-docs",
+      "description": "Quickly capture a content idea into ~/code/content from any repo or chat. Video ideas go to VIDEO-IDEAS.md; smaller podcast topics, guest ideas, questions, and AI observations go to TOPICS.md. Every entry gets a source line referencing the chat and repo it came from. Use when the user says \"/save-idea\", \"save this idea\", \"video idea\", \"add a topic\", \"write this down for a video/podcast\". Differentiator: appends to the user''s content backlog — not a reminder, task, or general note tool.",
+      "is_nested": true
+    },
+    {
+      "name": "segment-anything",
+      "path": "mlops/models/segment-anything",
+      "category": "mlops",
+      "description": "SAM: zero-shot image segmentation via points, boxes, masks.",
+      "is_nested": true
+    },
+    {
+      "name": "setup-help",
+      "path": "ops-and-setup/setup-help",
+      "category": "ops-and-setup",
+      "description": "Walk the user through setting up anything step by step. Use when the user asks for help setting up, configuring, installing, or getting something working — \"help me set up X\", \"walk me through this\", \"setup-help\". Differentiator: gives one current step at a time, then always lists every remaining setup step after each response.",
+      "is_nested": true
+    },
+    {
+      "name": "short",
+      "path": "thinking-and-docs/short",
+      "category": "thinking-and-docs",
+      "description": "Manually-invoked skill that forces the agent to compress its current answer — strip filler, simplify wording, and cut length while keeping the substance. Use when the user says \"short\", \"shorter\", \"simpler\", \"too long\", \"tl;dr\", or wants a more concise version of the previous response.",
+      "is_nested": true
+    },
+    {
+      "name": "sketch",
+      "path": "creative/sketch",
+      "category": "creative",
+      "description": "Throwaway HTML mockups: 2-3 design variants to compare.",
+      "is_nested": true
+    },
+    {
+      "name": "skill-hook-creator",
+      "path": "skill-authoring/skill-hook-creator",
+      "category": "skill-authoring",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "software-development__requesting-code-review",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/software-development__requesting-code-review",
+      "category": ".deleted-duplicates",
+      "description": "Pre-commit review: security scan, quality gates, auto-fix.",
+      "is_nested": true
+    },
+    {
+      "name": "software-development__subagent-driven-development",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/software-development__subagent-driven-development",
+      "category": ".deleted-duplicates",
+      "description": "Execute plans via delegate_task subagents (2-stage review).",
+      "is_nested": true
+    },
+    {
+      "name": "software-development__systematic-debugging",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/software-development__systematic-debugging",
+      "category": ".deleted-duplicates",
+      "description": "4-phase root cause debugging: understand bugs before fixing.",
+      "is_nested": true
+    },
+    {
+      "name": "software-development__test-driven-development",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/software-development__test-driven-development",
+      "category": ".deleted-duplicates",
+      "description": "TDD: enforce RED-GREEN-REFACTOR, tests before code.",
+      "is_nested": true
+    },
+    {
+      "name": "software-development__writing-plans",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/software-development__writing-plans",
+      "category": ".deleted-duplicates",
+      "description": "Write implementation plans: bite-sized tasks, paths, code.",
+      "is_nested": true
+    },
+    {
+      "name": "songsee",
+      "path": "media/songsee",
+      "category": "media",
+      "description": "Audio spectrograms/features (mel, chroma, MFCC) via CLI.",
+      "is_nested": true
+    },
+    {
+      "name": "songwriting-and-ai-music",
+      "path": "creative/songwriting-and-ai-music",
+      "category": "creative",
+      "description": "Songwriting craft and Suno AI music prompts.",
+      "is_nested": true
+    },
+    {
+      "name": "spike",
+      "path": "software-development/spike",
+      "category": "software-development",
+      "description": "Throwaway experiments to validate an idea before build.",
+      "is_nested": true
+    },
+    {
+      "name": "spotify",
+      "path": "media/spotify",
+      "category": "media",
+      "description": "Spotify: play, search, queue, manage playlists and devices.",
+      "is_nested": true
+    },
+    {
+      "name": "stop-overthinking",
+      "path": "thinking-and-docs/stop-overthinking",
+      "category": "thinking-and-docs",
+      "description": "Manually-invoked skill that stops overthinking and forces a short, practical decision. Use only when the user explicitly invokes stop-overthinking.",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__brainstorming",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__brainstorming",
+      "category": ".deleted-duplicates",
+      "description": "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation.",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__dispatching-parallel-agents",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__dispatching-parallel-agents",
+      "category": ".deleted-duplicates",
+      "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__executing-plans",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__executing-plans",
+      "category": ".deleted-duplicates",
+      "description": "Use when you have a written implementation plan to execute in a separate session with review checkpoints",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__finishing-a-development-branch",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__finishing-a-development-branch",
+      "category": ".deleted-duplicates",
+      "description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__receiving-code-review",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__receiving-code-review",
+      "category": ".deleted-duplicates",
+      "description": "Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__requesting-code-review",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__requesting-code-review",
+      "category": ".deleted-duplicates",
+      "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__subagent-driven-development",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__subagent-driven-development",
+      "category": ".deleted-duplicates",
+      "description": "Use when executing implementation plans with independent tasks in the current session",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__systematic-debugging",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__systematic-debugging",
+      "category": ".deleted-duplicates",
+      "description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__test-driven-development",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__test-driven-development",
+      "category": ".deleted-duplicates",
+      "description": "Use when implementing any feature or bugfix, before writing implementation code",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__using-git-worktrees",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__using-git-worktrees",
+      "category": ".deleted-duplicates",
+      "description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__using-superpowers",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__using-superpowers",
+      "category": ".deleted-duplicates",
+      "description": "Use when starting any conversation - establishes how to find and use skills, requiring skill invocation before ANY response including clarifying questions",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__verification-before-completion",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__verification-before-completion",
+      "category": ".deleted-duplicates",
+      "description": "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__writing-plans",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__writing-plans",
+      "category": ".deleted-duplicates",
+      "description": "Use when you have a spec or requirements for a multi-step task, before touching code",
+      "is_nested": true
+    },
+    {
+      "name": "superpowers__writing-skills",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/superpowers__writing-skills",
+      "category": ".deleted-duplicates",
+      "description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment",
+      "is_nested": true
+    },
+    {
+      "name": "teach",
+      "path": "thinking-and-docs/teach",
+      "category": "thinking-and-docs",
+      "description": "Teach the user a new skill or concept, within this workspace.",
+      "is_nested": true
+    },
+    {
+      "name": "teams-meeting-pipeline",
+      "path": "productivity/teams-meeting-pipeline",
+      "category": "productivity",
+      "description": "Operate the Teams meeting summary pipeline via Hermes CLI — summarize meetings, inspect pipeline status, replay jobs, manage Microsoft Graph subscriptions.",
+      "is_nested": true
+    },
+    {
+      "name": "tooling__code-review",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/tooling__code-review",
+      "category": ".deleted-duplicates",
+      "description": "Review changed or specified code for correctness bugs and quality issues.",
+      "is_nested": true
+    },
+    {
+      "name": "tooling__extend-nimagent",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/tooling__extend-nimagent",
+      "category": ".deleted-duplicates",
+      "description": "Create or hot-load a new tool, skill (slash command), MCP server entry, theme, provider/model, or installable nimpkg package compatible with NimAgent. Use when the user asks how to extend NimAgent, add a tool, build a skill, or package one for the registry.",
+      "is_nested": true
+    },
+    {
+      "name": "tooling__extend-omni",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/tooling__extend-omni",
+      "category": ".deleted-duplicates",
+      "description": "Create or hot-load a new tool, skill (slash command), MCP server entry, theme, provider/model, or installable omni-pkg package compatible with Omni. Use when the user asks how to extend Omni, add a tool, build a skill, or package one for the registry.",
+      "is_nested": true
+    },
+    {
+      "name": "tooling__find-skills",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/tooling__find-skills",
+      "category": ".deleted-duplicates",
+      "description": "Helps users discover and install agent skills when they ask questions like \"how do I do X\", \"find a skill for X\", \"is there a skill that can...\", or express interest in extending capabilities. This skill should be used when the user is looking for functionality that might exist as an installable skill.",
+      "is_nested": true
+    },
+    {
+      "name": "tooling__nimhub",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/tooling__nimhub",
+      "category": ".deleted-duplicates",
+      "description": "Launch the NimHub dashboard — opens a browser page that lists, launches, and provides a global AI for editing every NimAgent editor and engine.",
+      "is_nested": true
+    },
+    {
+      "name": "tooling__project-doctor",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/tooling__project-doctor",
+      "category": ".deleted-duplicates",
+      "description": "Inspect a project for missing files, broken paths, invalid configs, and startup blockers.",
+      "is_nested": true
+    },
+    {
+      "name": "tooling__vs-project-starter",
+      "path": ".deleted-duplicates/2026-09-03T14-36-22-217Z/tooling__vs-project-starter",
+      "category": ".deleted-duplicates",
+      "description": "Interactive guide to create the right Visual Studio 2026 project from scratch, step by step.",
+      "is_nested": true
+    },
+    {
+      "name": "touchdesigner-mcp",
+      "path": "creative/touchdesigner-mcp",
+      "category": "creative",
+      "description": "Control a running TouchDesigner instance via twozero MCP — create operators, set parameters, wire connections, execute Python, build real-time visuals. 36 native tools.",
+      "is_nested": true
+    },
+    {
+      "name": "truescript",
+      "path": "languages/truescript",
+      "category": "languages",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "typescript",
+      "path": "codebase-starters/typescript",
+      "category": "codebase-starters",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "using-addon-skills",
+      "path": "skill-authoring/using-addon-skills",
+      "category": "skill-authoring",
+      "description": "Use when a task mentions a language, framework, design system, game engine, agent harness, or research target — the auto-trigger rules for the dariusai-harness addon library (78 skills across 11 groups, on top of the 14 superpowers process skills). Pairs with superpowers:using-superpowers, which is the methodology layer; this skill is the domain layer.",
+      "is_nested": true
+    },
+    {
+      "name": "video-coding",
+      "path": "languages/video-coding",
+      "category": "languages",
+      "description": "\u003e-",
+      "is_nested": true
+    },
+    {
+      "name": "vllm",
+      "path": "mlops/inference/vllm",
+      "category": "mlops",
+      "description": "vLLM: high-throughput LLM serving, OpenAI API, quantization.",
+      "is_nested": true
+    },
+    {
+      "name": "webhook-subscriptions",
+      "path": "devops/webhook-subscriptions",
+      "category": "devops",
+      "description": "Webhook subscriptions: event-driven agent runs.",
+      "is_nested": true
+    },
+    {
+      "name": "weights-and-biases",
+      "path": "mlops/evaluation/weights-and-biases",
+      "category": "mlops",
+      "description": "W\u0026B: log ML experiments, sweeps, model registry, dashboards.",
+      "is_nested": true
+    },
+    {
+      "name": "xurl",
+      "path": "social-media/xurl",
+      "category": "social-media",
+      "description": "X/Twitter via xurl CLI: post, search, DM, media, v2 API.",
+      "is_nested": true
+    },
+    {
+      "name": "youtube-content",
+      "path": "media/youtube-content",
+      "category": "media",
+      "description": "YouTube transcripts to summaries, threads, blogs.",
+      "is_nested": true
+    },
+    {
+      "name": "youtube-transcript",
+      "path": "research-and-web/youtube-transcript",
+      "category": "research-and-web",
+      "description": "Use whenever the user needs the transcript of a YouTube video — fetching, extracting, downloading, or pulling captions/subtitles/transcript text from a YouTube URL. Triggers on \"get the transcript\", \"transcript of this video\", \"pull the captions\", \"download subtitles\", \"what does this YouTube video say\". Primary path is DeepAPI (go to deepapi.co to get an API key); yt-dlp is the local fallback.",
+      "is_nested": true
+    }
+  ]
+}

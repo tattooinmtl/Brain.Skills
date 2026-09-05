@@ -1,0 +1,150 @@
+{
+  "bundle_name": "minimax-agent-skills",
+  "generated_at": "2026-04-29",
+  "source_page": "https://agent.minimax.io/skills",
+  "upstream_repository": "https://github.com/MiniMax-AI/skills",
+  "important_limitations": [
+    "The marketplace page is a JavaScript application and did not expose the complete skill file tree through static HTML in this runtime.",
+    "Direct ZIP download from GitHub/codeload was unavailable from the execution container.",
+    "This bundle contains compact skill folders with SKILL.md, agents/openai.yaml, README.md, and upstream links. It is not a byte-for-byte clone of every nested upstream file."
+  ],
+  "skill_count": 17,
+  "skills": [
+    {
+      "name": "frontend-dev",
+      "source": "Official",
+      "description": "Full-stack frontend development combining premium UI design, cinematic animations (Framer Motion, GSAP), AI-generated media assets via MiniMax API (image, video, audio, music, TTS), persuasive copywriting (AIDA framework), and generative art (p5.js, Three.js, Canvas). Tech stack: React / Next.js, Tailwind CSS.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/frontend-dev",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/frontend-dev/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "fullstack-dev",
+      "source": "Official",
+      "description": "Full-stack backend architecture and frontend-backend integration. REST API design, auth flows (JWT, session, OAuth), real-time features (SSE, WebSocket), database integration (SQL / NoSQL), production hardening, and release checklist. Guided workflow: requirements -> architecture -> implementation.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/fullstack-dev",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/fullstack-dev/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "android-native-dev",
+      "source": "Official",
+      "description": "Android native application development with Material Design 3. Kotlin / Jetpack Compose, adaptive layouts, Gradle configuration, accessibility (WCAG), build troubleshooting, performance optimization, and motion system.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/android-native-dev",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/android-native-dev/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "ios-application-dev",
+      "source": "Official",
+      "description": "iOS application development guide covering UIKit, SnapKit, and SwiftUI. Touch targets, safe areas, navigation patterns, Dynamic Type, Dark Mode, accessibility, collection views, and Apple HIG compliance.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/ios-application-dev",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/ios-application-dev/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "flutter-dev",
+      "source": "Official",
+      "description": "Flutter cross-platform development covering widget patterns, Riverpod/Bloc state management, GoRouter navigation, performance optimization, and testing strategies.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/flutter-dev",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/flutter-dev/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "react-native-dev",
+      "source": "Official",
+      "description": "React Native and Expo development guide covering components, styling, animations, navigation, state management, forms, networking, performance optimization, testing, native capabilities, and engineering (project structure, deployment, SDK upgrades, CI/CD).",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/react-native-dev",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/react-native-dev/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "shader-dev",
+      "source": "Official",
+      "description": "Comprehensive GLSL shader techniques for creating stunning visual effects - ray marching, SDF modeling, fluid simulation, particle systems, procedural generation, lighting, post-processing, and more. ShaderToy-compatible.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/shader-dev",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/shader-dev/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "gif-sticker-maker",
+      "source": "Official",
+      "description": "Convert photos (people, pets, objects, logos) into 4 animated GIF stickers with captions. Funko Pop / Pop Mart style, powered by MiniMax Image & Video Generation API.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/gif-sticker-maker",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/gif-sticker-maker/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "minimax-pdf",
+      "source": "Official",
+      "description": "Generate, fill, and reformat PDF documents with a token-based design system. CREATE polished PDFs from scratch (15 cover styles), FILL existing form fields, or REFORMAT documents into a new design. Print-ready output with typography and color derived from document type.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/minimax-pdf",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/minimax-pdf/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "pptx-generator",
+      "source": "Official",
+      "description": "Generate, edit, and read PowerPoint presentations. Create from scratch with PptxGenJS (cover, TOC, content, section divider, summary slides), edit existing PPTX via XML workflows, or extract text with markitdown.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/pptx-generator",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/pptx-generator/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "minimax-xlsx",
+      "source": "Official",
+      "description": "Open, create, read, analyze, edit, or validate Excel/spreadsheet files (.xlsx, .xlsm, .csv, .tsv). Covers creating new xlsx from scratch via XML templates, reading and analyzing with pandas, editing existing files with zero format loss, formula recalculation, validation, and professional financial formatting.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/minimax-xlsx",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/minimax-xlsx/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "minimax-docx",
+      "source": "Official",
+      "description": "Professional DOCX document creation, editing, and formatting using OpenXML SDK (.NET). Three pipelines: create new documents from scratch, fill/edit content in existing documents, or apply template formatting with XSD validation gate-check.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/minimax-docx",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/minimax-docx/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "vision-analysis",
+      "source": "Community",
+      "description": "Analyze, describe, and extract information from images using vision AI models. Supports describe, OCR, UI mockup review, chart data extraction, and object detection. Powered by MiniMax VL API with OpenAI GPT-4V fallback.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/vision-analysis",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/vision-analysis/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "minimax-multimodal-toolkit",
+      "source": "Official",
+      "description": "Generate voice, music, video, and image content via MiniMax APIs - the unified entry for MiniMax multimodal use cases. Covers TTS (text-to-speech, voice cloning, voice design, multi-segment), music (songs, instrumentals), video (text-to-video, image-to-video, start-end frame, subject reference, templates, long-form multi-scene), image (text-to-image, image-to-image with character reference), and media processing (convert, concat, trim, extract) via FFmpeg.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/minimax-multimodal-toolkit",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/minimax-multimodal-toolkit/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "minimax-music-gen",
+      "source": "Official",
+      "description": "Generate vocal songs, instrumentals, and covers using MiniMax Music API. Two modes: Basic (one-liner in, song out) and Advanced Control (edit lyrics, refine prompt, plan structure). Supports lyrics generation, style vocabulary, streaming playback, and iterative feedback.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/minimax-music-gen",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/minimax-music-gen/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "buddy-sings",
+      "source": "Official",
+      "description": "Let your Claude Code pet (/buddy) sing a personalized song. Interprets the pet's name and personality into a unique cached vocal identity, auto-gathers context (conversation, memory, git history) for themed lyrics, and generates music via minimax-music-gen.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/buddy-sings",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/buddy-sings/SKILL.md",
+      "validation_status": "compact structure valid"
+    },
+    {
+      "name": "minimax-music-playlist",
+      "source": "Official",
+      "description": "Generate personalized playlists by analyzing your music taste. Builds a taste profile (genre, mood, language, vocal preferences), plans a themed tracklist, generates songs with album cover art, and refines the profile from feedback.",
+      "upstream_folder": "https://github.com/MiniMax-AI/skills/tree/main/skills/minimax-music-playlist",
+      "raw_skill_md": "https://raw.githubusercontent.com/MiniMax-AI/skills/main/skills/minimax-music-playlist/SKILL.md",
+      "validation_status": "compact structure valid"
+    }
+  ]
+}

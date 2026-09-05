@@ -1,0 +1,19 @@
+{
+  "author": "MiniMax Agent",
+  "category": "productivity",
+  "created_at": "2026-03-26T03:21:22Z",
+  "description": "Captures learnings, errors, and corrections to enable continuous improvement. Use when commands fail, user corrects you, missing features are requested, APIs fail, knowledge is outdated, or better approaches are discovered.",
+  "id": 380571960352837,
+  "name": "self-improving-agent",
+  "platform": "minimax",
+  "skill_id": 190705,
+  "tags": [
+    "self-improvement",
+    "learning",
+    "error-tracking",
+    "memory",
+    "agent"
+  ],
+  "updated_at": 1774466737471,
+  "version": "1.0.0"
+}

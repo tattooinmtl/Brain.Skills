@@ -1,0 +1,21 @@
+{
+  "category": "development",
+  "created_at": "2026-03-27T18:08:09Z",
+  "description": "Expert .NET full-stack development with C#, VB.NET, and modern UI/UX design. Use when users ask for ASP.NET Core, Windows Forms, WPF applications, API development, database integration, performance optimization, code refactoring, or modernization of legacy .NET applications.",
+  "id": 381032978251894,
+  "name": "dotnet-fullstack",
+  "platform": "minimax",
+  "skill_id": 191240,
+  "tags": [
+    "csharp",
+    "vbnet",
+    "aspnet",
+    "dotnet",
+    "wpf",
+    "winforms",
+    "entity-framework",
+    "web-api"
+  ],
+  "updated_at": 1774606788973,
+  "version": "1.0.0"
+}
