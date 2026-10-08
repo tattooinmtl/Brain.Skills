@@ -139,11 +139,31 @@ func installToAgentTarget(repoRoot, skillsSource string, agent AgentInfo) {
 
 	// Handle skills junction/link
 	if isJunctionOrSymlink(targetSkillsPath) {
-		color.Yellow("  • Skills link already exists: %s", targetSkillsPath)
+		current, _ := filepath.EvalSymlinks(targetSkillsPath)
+		wanted, _ := filepath.EvalSymlinks(skillsSource)
+		if current != "" && strings.EqualFold(filepath.Clean(current), filepath.Clean(wanted)) {
+			color.Green("  ✓ Skills link already points here: %s", targetSkillsPath)
+		} else if forceInstall {
+			// os.Remove on a junction removes only the link, never the target's files.
+			if err := os.Remove(targetSkillsPath); err != nil {
+				color.Red("  ✗ Could not replace old link %s: %v", targetSkillsPath, err)
+			} else if err := createSkillsBinding(skillsSource, targetSkillsPath); err != nil {
+				color.Red("  ✗ Failed to link skills: %v", err)
+			} else {
+				color.Green("  ✓ Re-pointed skills link %s -> %s (was %s)", targetSkillsPath, skillsSource, current)
+			}
+		} else {
+			color.Yellow("  • Skills link already exists (points to %s; use --force to re-point): %s", current, targetSkillsPath)
+		}
 	} else if pathExists(targetSkillsPath) {
 		if forceInstall {
-			color.Yellow("  • Removing existing skills folder for junction...")
-			_ = os.RemoveAll(targetSkillsPath)
+			// Never delete someone's own skills: move the folder aside.
+			backup := fmt.Sprintf("%s.backup-%s", targetSkillsPath, time.Now().Format("20060102-150405"))
+			if err := os.Rename(targetSkillsPath, backup); err != nil {
+				color.Red("  ✗ Could not move existing skills folder aside: %v", err)
+				return
+			}
+			color.Yellow("  • Moved existing skills folder to %s", backup)
 			if err := createSkillsBinding(skillsSource, targetSkillsPath); err != nil {
 				color.Red("  ✗ Failed to link skills: %v", err)
 			} else {

@@ -1,7 +1,8 @@
 [package]
 name = "brain-system"
-version = "0.3.0"
+version = "0.5.0"
 edition = "2021"
+build = "build.rs"
 
 [dependencies]
 windows-sys = { version = "0.59", features = [
@@ -10,7 +11,10 @@ windows-sys = { version = "0.59", features = [
     "Win32_UI_Shell",
     "Win32_Graphics_Gdi",
     "Win32_System_LibraryLoader",
-    "Win32_System_Threading"
+    "Win32_System_Threading",
+    "Win32_System_Registry",
+    "Win32_System_Console",
+    "Win32_Security"
 ] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
