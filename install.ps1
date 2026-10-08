@@ -7,6 +7,7 @@
 #   app\bin\brain-system.exe   the Global Brain tray app: 3D neural view, wiki,
 #                              Verifier Librarian, MCP server for Claude
 #   app\bin\skills.exe         the skills CLI (also put on your PATH)
+#   memory\                    your memory vault (Obsidian-style notes)
 #   brain.json                 where your memory vault and skills live
 # The skills library itself comes from the separate Skills Installer Hub
 # (install-skills.ps1 / Skills-Installer-Hub-Setup.exe).
@@ -15,7 +16,9 @@
 # update.ps1). Only files whose content changed are downloaded.
 # Uninstall: Windows Settings > Apps, or  update.ps1 -Uninstall
 #
-# Your memory vault is never modified or deleted by this script.
+# Your notes are never modified or deleted by this script. A vault in the old
+# location (C:\.skills\memory) is copied into memory\ and verified; the old
+# folder is then renamed to memory.moved-<date>, not deleted.
 # Everything runs in one script block that ends with `return`, never `exit`:
 # through `irm | iex`, `exit` would close your PowerShell window.
 
@@ -212,21 +215,52 @@ $BrainSkillsArgs = @($args)
     Remove-Item -LiteralPath $stage -Recurse -Force -ErrorAction SilentlyContinue
 
     # ---------------------------------------------------------------- where the vault and skills live
+    # Everything lives in the user folder. A vault found in the old dev-checkout
+    # location (C:\.skills\memory, used by installs before 1.0.1) is copied in,
+    # verified file by file, and the old folder is renamed so nothing keeps
+    # using it.
     $cfg = Read-Json $ConfigFile
-    if (-not $cfg -or -not $cfg.vault_dir -or -not (Test-Path $cfg.vault_dir)) {
-        $legacy = 'C:\.skills\memory'
+    $userVault = Join-Path $Root 'memory'
+    $legacy = if ($env:BRAINSKILLS_LEGACY_VAULT) { $env:BRAINSKILLS_LEGACY_VAULT.TrimEnd('\') } else { Join-Path 'C:\' '.skills\memory' }
+    $legacyInUse = $cfg -and $cfg.vault_dir -and ($cfg.vault_dir.TrimEnd('\') -ieq $legacy)
+    $hasNotesIn = { param($d) (Test-Path (Join-Path $d '10-Entities')) -or (Test-Path (Join-Path $d '30-Logs')) }
+    if ($legacyInUse -and (& $hasNotesIn $userVault)) {
+        # Two vaults: never guess which one is current.
+        Say "Two memory vaults exist: $legacy (in use) and $userVault. Keeping $legacy; merge them by hand, then delete brain.json's vault_dir line to switch." Yellow
+        $legacyInUse = $false   # brain.json keeps pointing at the vault in use
+    }
+    if (-not $cfg -or -not $cfg.vault_dir -or -not (Test-Path $cfg.vault_dir) -or $legacyInUse) {
         if ($env:BRAINSKILLS_VAULT) { $vault = $env:BRAINSKILLS_VAULT }
-        elseif ((Test-Path (Join-Path $legacy '10-Entities')) -or (Test-Path (Join-Path $legacy '30-Logs'))) { $vault = $legacy; Say "Using your existing memory vault: $legacy" Green }
         else {
-            $vault = Join-Path $Root 'memory'
-            foreach ($d in '00-Inbox', '10-Entities', '20-Concepts', '30-Logs') { New-Item -ItemType Directory -Force -Path (Join-Path $vault $d) | Out-Null }
-            $welcome = Join-Path $vault '20-Concepts\Global-Brain.md'
-            if (-not (Test-Path $welcome)) {
-                [IO.File]::WriteAllText($welcome, "# Global Brain`n`nThis is your memory vault. Agents write session logs to 30-Logs and new findings to 00-Inbox; verified knowledge lives in 10-Entities and 20-Concepts.`n", $Utf8)
+            $vault = $userVault
+            $hasNotes = { param($d) (Test-Path (Join-Path $d '10-Entities')) -or (Test-Path (Join-Path $d '30-Logs')) }
+            if (-not (& $hasNotes $vault) -and (& $hasNotes $legacy)) {
+                Say "Moving your memory vault from $legacy into $vault ..." Cyan
+                Stop-Brain
+                & robocopy.exe $legacy $vault /E /COPY:DAT /DCOPY:T /R:2 /W:1 /NFL /NDL /NJH /NJS /NP | Out-Null
+                $bad = 0
+                foreach ($f in Get-ChildItem -LiteralPath $legacy -Recurse -File -Force) {
+                    $t = Join-Path $vault $f.FullName.Substring($legacy.Length)
+                    if (-not (Test-Path -LiteralPath $t) -or (Get-FileHash -LiteralPath $f.FullName).Hash -ne (Get-FileHash -LiteralPath $t).Hash) { $bad++ }
+                }
+                if ($bad) {
+                    Say "$bad file(s) did not copy correctly; keeping the vault at $legacy for now. Run the setup again to retry." Yellow
+                    $vault = $legacy
+                } else {
+                    $retired = "$legacy.moved-$(Get-Date -Format yyyyMMdd)"
+                    try { Rename-Item -LiteralPath $legacy -NewName (Split-Path $retired -Leaf); Say "Vault moved. The old copy is kept as $retired" Green }
+                    catch { Say "Vault copied. Could not rename $legacy (in use?); it is no longer used." Yellow }
+                }
+            } elseif (-not (& $hasNotes $vault)) {
+                foreach ($d in '00-Inbox', '10-Entities', '20-Concepts', '30-Logs') { New-Item -ItemType Directory -Force -Path (Join-Path $vault $d) | Out-Null }
+                $welcome = Join-Path $vault '20-Concepts\Global-Brain.md'
+                if (-not (Test-Path $welcome)) {
+                    [IO.File]::WriteAllText($welcome, "# Global Brain`n`nThis is your memory vault. Agents write session logs to 30-Logs and new findings to 00-Inbox; verified knowledge lives in 10-Entities and 20-Concepts.`n", $Utf8)
+                }
+                Say "Created a new memory vault: $vault" Green
             }
-            Say "Created a new memory vault: $vault" Green
         }
-        $skillsDir = if ($cfg -and $cfg.skills_dir) { $cfg.skills_dir } elseif (Test-Path (Join-Path $Root 'skills')) { Join-Path $Root 'skills' } else { Join-Path $Root 'skills' }
+        $skillsDir = if ($cfg -and $cfg.skills_dir) { $cfg.skills_dir } else { Join-Path $Root 'skills' }
         Write-Json $ConfigFile ([ordered]@{ vault_dir = $vault; skills_dir = $skillsDir })
     }
 
