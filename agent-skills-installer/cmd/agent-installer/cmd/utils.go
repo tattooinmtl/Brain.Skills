@@ -24,7 +24,17 @@ func isJunctionOrSymlink(path string) bool {
 	if err != nil {
 		return false
 	}
-	return fi.Mode()&os.ModeSymlink != 0
+	// Since Go 1.23, Windows junctions (mount points) report ModeIrregular,
+	// not ModeSymlink. Treat any reparse point we can read a target from as a link.
+	if fi.Mode()&os.ModeSymlink != 0 {
+		return true
+	}
+	if fi.Mode()&os.ModeIrregular != 0 {
+		if _, err := os.Readlink(path); err == nil {
+			return true
+		}
+	}
+	return false
 }
 
 func createJunction(targetPath, linkPath string) error {

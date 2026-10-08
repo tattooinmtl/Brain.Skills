@@ -10,8 +10,9 @@
 #   commands\  slash commands (e.g. /skills for Claude Code)
 #   hub\       skills.exe, update-skills.ps1, skills-installed.json
 # Each agent's skills folder becomes a junction to skills\, so one update
-# reaches every agent. A real (non-link) skills folder in an agent is moved
-# aside as skills.backup-<date>, never deleted.
+# reaches every agent. Existing skills links are re-pointed; an agent's own
+# real skills folder is left alone (run with -ReplaceFolders to move it aside
+# as skills.backup-<date> and link the library instead; nothing is deleted).
 #
 # Update: run "Skills Installer Hub" from the Start menu, the brain tray menu,
 # or hub\update-skills.ps1. Only changed files are downloaded, and only files
@@ -219,7 +220,11 @@ $SkillsHubArgs = @($args)
     if (-not $old -or $Relink) {
         Say 'Linking the library into your AI agents...' Cyan
         $env:SKILLS_ROOT = $Root
-        & $SkillsExe install --auto --force --skills-source $SkillsDir
+        # --repoint moves existing skills links to this library; an agent's own
+        # (real) skills folder is kept unless -ReplaceFolders is given.
+        $linkArgs = @('install', '--auto', '--repoint', '--skills-source', $SkillsDir)
+        if ($SkillsHubArgs -contains '-ReplaceFolders') { $linkArgs += '--force' }
+        & $SkillsExe @linkArgs
         Remove-Item Env:SKILLS_ROOT -ErrorAction SilentlyContinue
     }
     $links = @(Get-OurLinks)
