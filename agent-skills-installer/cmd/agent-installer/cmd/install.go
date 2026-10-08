@@ -21,6 +21,7 @@ var (
 	autoInstall      bool
 	allInstall       bool
 	useCopy          bool
+	repointLinks     bool
 )
 
 var installCmd = &cobra.Command{
@@ -40,6 +41,7 @@ func init() {
 	installCmd.Flags().BoolVar(&autoInstall, "auto", false, "Non-interactive: install to detected default agents only")
 	installCmd.Flags().BoolVar(&allInstall, "all", false, "Non-interactive: install to ALL detected agents")
 	installCmd.Flags().BoolVar(&useCopy, "copy", false, "Copy files instead of creating directory junctions")
+	installCmd.Flags().BoolVar(&repointLinks, "repoint", false, "Re-point existing skills links to this source (never touches real folders)")
 }
 
 func runInstall(cmd *cobra.Command, args []string) error {
@@ -139,11 +141,12 @@ func installToAgentTarget(repoRoot, skillsSource string, agent AgentInfo) {
 
 	// Handle skills junction/link
 	if isJunctionOrSymlink(targetSkillsPath) {
-		current, _ := filepath.EvalSymlinks(targetSkillsPath)
-		wanted, _ := filepath.EvalSymlinks(skillsSource)
+		current, _ := os.Readlink(targetSkillsPath)
+		current = strings.TrimPrefix(current, `\??\`)
+		wanted, _ := filepath.Abs(skillsSource)
 		if current != "" && strings.EqualFold(filepath.Clean(current), filepath.Clean(wanted)) {
 			color.Green("  ✓ Skills link already points here: %s", targetSkillsPath)
-		} else if forceInstall {
+		} else if forceInstall || repointLinks {
 			// os.Remove on a junction removes only the link, never the target's files.
 			if err := os.Remove(targetSkillsPath); err != nil {
 				color.Red("  ✗ Could not replace old link %s: %v", targetSkillsPath, err)
@@ -153,7 +156,7 @@ func installToAgentTarget(repoRoot, skillsSource string, agent AgentInfo) {
 				color.Green("  ✓ Re-pointed skills link %s -> %s (was %s)", targetSkillsPath, skillsSource, current)
 			}
 		} else {
-			color.Yellow("  • Skills link already exists (points to %s; use --force to re-point): %s", current, targetSkillsPath)
+			color.Yellow("  • Skills link already exists (points to %s; use --repoint to re-point): %s", current, targetSkillsPath)
 		}
 	} else if pathExists(targetSkillsPath) {
 		if forceInstall {
@@ -170,7 +173,7 @@ func installToAgentTarget(repoRoot, skillsSource string, agent AgentInfo) {
 				color.Green("  ✓ Junctioned skills repository -> %s", targetSkillsPath)
 			}
 		} else {
-			color.Yellow("  ⏭  Folder already exists (use --force to replace with junction): %s", targetSkillsPath)
+			color.Yellow("  ⏭  Kept this agent's own skills folder (use --force to move it aside and link the library): %s", targetSkillsPath)
 		}
 	} else {
 		if err := createSkillsBinding(skillsSource, targetSkillsPath); err != nil {
