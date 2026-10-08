@@ -1,8 +1,8 @@
 # ⚡ Skills Index
 
-Auto-generated on 2026-09-05 11:35:48
+Auto-generated on 2026-10-08 11:04:55
 
-Total Skills: **282** (90 top-level, 192 library skills)
+Total Skills: **284** (92 top-level, 192 library skills)
 
 ## Top-Level Skills
 
@@ -37,7 +37,9 @@ Total Skills: **282** (90 top-level, 192 library skills)
 | **fullstack-dev** | `general` | Full-stack backend architecture and frontend-backend integration guide. TRIGGER when: building a full-stack app, creating REST API with frontend, scaffolding backend service, building todo app, building CRUD app, building real-time app, building chat app, Express + React, Next.js API, Node.js backend, Python backend, Go backend, designing service layers, implementing error handling, managing config/auth, setting up API clients, implementing auth flows, handling file uploads, adding real-time features (SSE/WebSocket), hardening for production. DO NOT TRIGGER when: pure frontend UI work, pure CSS/styling, database schema only. |
 | **game-designer** | `general` | Design gameplay systems, mechanics, economies, and player progressions with rigorous documentation. Use when users ask to create game design documents (GDD), design core gameplay loops, balance game economies, define player progression systems, prototype mechanics, or analyze game systems for balance issues. Triggers on requests involving game mechanics, player motivation design, economy balancing, progression curves, and gameplay documentation. |
 | **game-ui-design** | `general` | Create distinctive, production-grade game user interfaces with high design quality. Use when building game HUDs, menus, inventory screens, dialogue systems, or any in-game UI elements. Generates creative, polished code and design that avoids generic "mobile game" aesthetics with bold, genre-appropriate, memorable interfaces. |
+| **gauntlet-loop** | `general` | Turns any goal into one short, paste-ready "gauntlet loop" prompt - a prompt that makes an agent set a concrete quality bar, split the work into small judgeable pieces, run a builder and a separate harsh critic on each, compare blind against the bar, and loop until it wins. Works for builds, writing, code, research, or design. Triggers on "/gauntlet-loop", "gauntlet loop", "gauntlet this", "make a gauntlet prompt", "loop until it beats X". |
 | **go-coding** | `general` | Go environment setup, syntax rules, best practices, and project scaffolding. |
+| **hf-cli** | `general` | Hugging Face Hub CLI (`hf`) for downloading, uploading, and managing models, datasets, spaces, buckets, repos, papers, jobs, and more on the Hugging Face Hub. Use when: handling authentication; managing local cache; managing Hugging Face Buckets; running or scheduling jobs on Hugging Face infrastructure; managing Hugging Face repos; discussions and pull requests; browsing models, datasets and spaces; reading, searching, or browsing academic papers; managing collections; querying datasets; configuring spaces; setting up webhooks; or deploying and managing HF Inference Endpoints. Make sure to use this skill whenever the user mentions 'hf', 'huggingface', 'Hugging Face', 'huggingface-cli', or 'hugging face cli', or wants to do anything related to the Hugging Face ecosystem and to AI and ML in general. Also use for cloud storage needs like training checkpoints, data pipelines, or agent traces. Use even if the user doesn't explicitly ask for a CLI command. Replaces the deprecated `huggingface-cli`. |
 | **high-end-visual-design** | `general` | Skill migrated from user agent home. Original frontmatter missing. |
 | **html-game-builder** | `general` | Build a small, self-contained HTML5 canvas game in a single file. |
 | **html-presentation-generator** | `general` | Generate professional multi-page HTML presentations (PPT) exportable to PDF/PPTX. Covers cover pages, table of contents, section dividers, content pages, and summary/closing slides. TRIGGERS: PPT, presentation, slides, 演示文稿, 幻灯片, HTML PPT, slide deck, 制作PPT, make slides, create presentation. |
