@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brain.Skills: the Global Brain for your AI agents</title>
+<meta name="description" content="A shared memory and 3D neural view of every AI agent session, tool, skill and note on your PC, plus 230+ skills linked into Claude Code, Codex, Gemini, MiniMax and more. Windows installer and command-line install.">
+<link rel="icon" href="assets/favicon.ico">
+<style>
+  :root {
+    --bg: #03050b; --bg-2: #0a0f1d; --bg-3: #121a30;
+    --line: rgba(120,170,255,.16); --line-2: rgba(120,170,255,.3);
+    --text: #e3e9f6; --muted: #8b97b3;
+    --cyan: #5ff3ff; --blue: #3d8bff; --green: #2dff88; --yellow: #ffd23f;
+    --orange: #ff9f43; --purple: #b36bff; --pink: #ff5fa2; --teal: #22d3c5;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  a { color: var(--cyan); }
+  code, pre { font-family: "Cascadia Code", Consolas, "SFMono-Regular", Menlo, monospace; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+  /* nav */
+  nav { position: sticky; top: 0; z-index: 10; background: rgba(3,5,11,.82); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; align-items: center; gap: 22px; height: 58px; }
+  .logo { display: flex; gap: 10px; align-items: center; font-weight: 800; letter-spacing: .3px; color: #dff9ff; text-decoration: none; text-shadow: 0 0 14px rgba(95,243,255,.45); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
+  nav .links { display: flex; gap: 18px; margin-left: auto; font-size: 14px; flex-wrap: wrap; }
+  nav .links a { color: var(--muted); text-decoration: none; }
+  nav .links a:hover { color: var(--text); }
+
+  /* hero */
+  .hero { padding: 64px 0 30px; text-align: center; }
+  .pill { display: inline-flex; gap: 8px; align-items: center; padding: 5px 14px; border: 1px solid var(--line-2); border-radius: 30px; font-size: 13px; color: var(--muted); background: rgba(95,243,255,.04); }
+  .pill b { color: var(--green); font-weight: 700; }
+  h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1.08; margin: 18px 0 14px; letter-spacing: -1px; }
+  h1 .glow { background: linear-gradient(90deg, var(--cyan), var(--blue) 40%, var(--purple) 70%, var(--yellow)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { max-width: 760px; margin: 0 auto; color: #b9c4dc; font-size: 18px; }
+  .cta { display: flex; gap: 12px; justify-content: center; margin: 28px 0 10px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px; border-radius: 10px; font-weight: 700; text-decoration: none; border: 1px solid var(--line-2); color: var(--text); background: rgba(255,255,255,.03); cursor: pointer; font-size: 15px; }
+  .btn:hover { border-color: var(--cyan); color: var(--cyan); }
+  .btn.primary { background: linear-gradient(135deg, #1dd7ff, #3d8bff); color: #00111a; border: 0; box-shadow: 0 8px 30px rgba(61,139,255,.35); }
+  .btn.primary:hover { color: #00111a; filter: brightness(1.08); }
+  .small { font-size: 13px; color: var(--muted); }
+
+  .shot { margin: 40px auto 0; position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--line-2); box-shadow: 0 30px 120px rgba(61,139,255,.18), 0 0 0 1px rgba(255,255,255,.02); }
+  .shot img { display: block; width: 100%; height: auto; }
+  .shot figcaption { position: absolute; left: 14px; bottom: 12px; font-size: 12.5px; color: #cdd6ea; background: rgba(3,5,11,.7); padding: 5px 10px; border-radius: 8px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; margin: 16px 0 0; font-size: 13.5px; color: #b9c4dc; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend i { width: 10px; height: 10px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; display: inline-block; }
+
+  /* sections */
+  section { padding: 70px 0 10px; }
+  h2 { font-size: 30px; margin: 0 0 8px; letter-spacing: -.4px; }
+  .sub { color: var(--muted); margin: 0 0 28px; max-width: 780px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: 16px; }
+  .card { background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  .card h3 { margin: 0 0 6px; font-size: 17px; display: flex; gap: 10px; align-items: center; }
+  .card p { margin: 0; color: #b5c0d8; font-size: 14.5px; }
+  .card .ico { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 16px; background: rgba(95,243,255,.08); }
+
+  /* install */
+  .install { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 18px; }
+  .dl { background: linear-gradient(180deg, rgba(61,139,255,.08), rgba(61,139,255,.02)); border: 1px solid var(--line-2); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+  .dl h3 { margin: 0; font-size: 19px; }
+  .dl p { margin: 0; color: #b5c0d8; font-size: 14.5px; }
+  .dl .meta { font-size: 12.5px; color: var(--muted); }
+  .tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .tab { background: none; border: 1px solid var(--line); color: var(--muted); padding: 6px 12px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 13px; }
+  .tab.on { color: var(--cyan); border-color: var(--cyan); background: rgba(95,243,255,.06); }
+  .cmd { position: relative; background: #050915; border: 1px solid var(--line); border-radius: 10px; padding: 14px 92px 14px 16px; font-size: 13.5px; color: #d6e2ff; overflow-x: auto; white-space: pre; margin: 0 0 10px; }
+  .copy { position: absolute; right: 8px; top: 8px; background: var(--bg-3); color: var(--text); border: 1px solid var(--line-2); border-radius: 7px; padding: 5px 10px; cursor: pointer; font: inherit; font-size: 12px; }
+  .copy:hover { border-color: var(--cyan); color: var(--cyan); }
+  .note { font-size: 13.5px; color: var(--muted); border-left: 3px solid var(--yellow); padding: 6px 12px; background: rgba(255,210,63,.04); border-radius: 0 8px 8px 0; margin: 14px 0 0; }
+
+  /* how to use */
+  .steps { counter-reset: s; display: grid; gap: 14px; }
+  .step { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; gap: 14px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .step::before { content: counter(s); width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; color: #00111a; background: linear-gradient(135deg, var(--cyan), var(--blue)); }
+  .step h3 { margin: 2px 0 4px; font-size: 16.5px; }
+  .step p, .step li { color: #b5c0d8; font-size: 14.5px; margin: 0; }
+  .step ul { margin: 6px 0 0; padding-left: 18px; }
+  kbd { background: var(--bg-3); border: 1px solid var(--line-2); border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; font-size: 12.5px; font-family: inherit; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  td, th { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .8px; }
+  .table-wrap { overflow-x: auto; background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; padding: 6px 10px; }
+
+  footer { margin-top: 80px; border-top: 1px solid var(--line); padding: 28px 0 50px; color: var(--muted); font-size: 13.5px; }
+  footer .wrap { display: flex; gap: 18px; flex-wrap: wrap; justify-content: space-between; }
+  #version-status.live b { color: var(--green); }
+  @media (max-width: 640px) { nav .links { display: none; } .hero { padding-top: 40px; } .cmd { padding-right: 16px; padding-top: 44px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#"><span class="dot"></span>Brain.Skills</a>
+    <div class="links">
+      <a href="#what">What it does</a>
+      <a href="#install">Install</a>
+      <a href="#use">How to use</a>
+      <a href="https://github.com/tattooinmtl/Brain.Skills">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <span class="pill" id="version-status">Version <b id="v-version">…</b><span id="v-detail"></span></span>
+  <h1>One <span class="glow">Global Brain</span><br>for every AI agent on your PC</h1>
+  <p class="lead">Brain.Skills remembers what all your agents do (Claude Code, Codex, MiniMax and more) and shows it as a living 3D neural network. It also installs a library of 230+ skills and links it into every agent at once.</p>
+  <div class="cta">
+    <a class="btn primary" id="dl-core-hero" href="https://github.com/tattooinmtl/Brain.Skills/releases/latest/download/BrainSkills-Setup.exe">⬇ Download for Windows</a>
+    <a class="btn" href="#install">Command-line install</a>
+  </div>
+  <div class="small">Windows 10/11 · per-user, no administrator · free and open source</div>
+
+  <figure class="shot">
+    <img src="assets/brain-3d.jpg" width="1280" height="663" alt="The 3D neural view of a real Global Brain: glowing clusters of skills, conversations, tools and projects connected to a bright core">
+    <figcaption>A real brain: 571 nodes, 892 links</figcaption>
+  </figure>
+  <div class="legend">
+    <span style="color:#eafcff"><i></i>Global brain</span>
+    <span style="color:var(--orange)"><i></i>Projects</span>
+    <span style="color:var(--blue)"><i></i>Conversations</span>
+    <span style="color:var(--green)"><i></i>Tools</span>
+    <span style="color:var(--yellow)"><i></i>Skills</span>
+    <span style="color:var(--purple)"><i></i>Sub-agents</span>
+    <span style="color:#fff"><i></i>Sessions</span>
+    <span style="color:var(--teal)"><i></i>Notes</span>
+  </div>
+</header>
+
+<section id="what" class="wrap">
+  <h2>What it does</h2>
+  <p class="sub">Two installers, one system. The brain watches and remembers; the skills hub keeps every agent equipped.</p>
+  <div class="grid">
+    <div class="card"><h3><span class="ico">🧠</span>3D neural view</h3><p>Every conversation, tool call, sub-agent, skill and note is a node. Nodes pulse and light travels along the links while your agents work. Zoom out to see everything, fly through it, and click any node.</p></div>
+    <div class="card"><h3><span class="ico">🔎</span>Shared memory</h3><p>Reads Claude Code (including sub-agents), Codex and any agent that writes to its event log. One searchable history of what was done, where, and with which tools.</p></div>
+    <div class="card"><h3><span class="ico">🤝</span>Claude can use it</h3><p>Ships an MCP server and a Claude Code plugin. Claude can search past sessions before starting work and record what it learned when it's done. Other MCP clients work the same way.</p></div>
+    <div class="card"><h3><span class="ico">📚</span>Wiki &amp; Librarian</h3><p>Your Obsidian-style vault with a reader and editor. The Verifier Librarian flags notes that changed without review and broken [[links]]; you approve or roll back.</p></div>
+    <div class="card"><h3><span class="ico">⚡</span>Skills Installer Hub</h3><p>Installs 230+ skills and links them into Claude Code, Codex, Gemini, Grok, Kimi, MiniMax, Omni and more. One update reaches every agent. Agents' own skills folders are never overwritten.</p></div>
+    <div class="card"><h3><span class="ico">🔄</span>Updates itself</h3><p>The tray checks GitHub and tells you when a new version is out. Updates download only the files that changed and verify each one. Your notes are never touched.</p></div>
+  </div>
+</section>
+
+<section id="install" class="wrap">
+  <h2>Install</h2>
+  <p class="sub">Install the <b>Brain</b> first, then the <b>Skills Hub</b>. Both always fetch the newest version from GitHub, and both install into <code>%USERPROFILE%\.brain-skills</code> without administrator rights.</p>
+
+  <div class="install">
+    <div class="dl">
+      <h3>🪟 Windows installer</h3>
+      <p>Download and double-click. A console window shows progress and closes when you press Enter.</p>
+      <a class="btn primary" id="dl-core" href="https://github.com/tattooinmtl/Brain.Skills/releases/latest/download/BrainSkills-Setup.exe">⬇ BrainSkills-Setup.exe</a>
+      <a class="btn" id="dl-hub" href="https://github.com/tattooinmtl/Brain.Skills/releases/latest/download/Skills-Installer-Hub-Setup.exe">⬇ Skills-Installer-Hub-Setup.exe</a>
+      <div class="meta" id="release-meta">From the latest GitHub release.</div>
+      <div class="note">Windows may show <b>"Windows protected your PC"</b> the first time. Click <b>More info</b>, then <b>Run anyway</b>.</div>
+    </div>
+
+    <div class="dl">
+      <h3>⌨ Command line</h3>
+      <div class="tabs" role="tablist">
+        <button class="tab on" data-shell="ps">PowerShell</button>
+        <button class="tab" data-shell="cmd">Command Prompt</button>
+      </div>
+      <div data-pane="ps">
+        <pre class="cmd" id="cmd-ps-core">irm https://raw.githubusercontent.com/tattooinmtl/Brain.Skills/main/install.ps1 | iex</pre>
+        <pre class="cmd" id="cmd-ps-hub">irm https://raw.githubusercontent.com/tattooinmtl/Brain.Skills/main/install-skills.ps1 | iex</pre>
+      </div>
+      <div data-pane="cmd" hidden>
+        <pre class="cmd">powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/tattooinmtl/Brain.Skills/main/install.ps1 | iex"</pre>
+        <pre class="cmd">powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/tattooinmtl/Brain.Skills/main/install-skills.ps1 | iex"</pre>
+      </div>
+      <p class="small">First line: the Brain. Second line: the Skills Hub. Running them again updates.</p>
+    </div>
+  </div>
+
+  <div class="table-wrap" style="margin-top:18px">
+    <table>
+      <tr><th>What gets installed</th><th>Where</th></tr>
+      <tr><td>Brain tray app, 3D view, MCP server</td><td><code>.brain-skills\app\bin\brain-system.exe</code> (starts with Windows)</td></tr>
+      <tr><td><code>skills</code> command-line tool</td><td><code>.brain-skills\app\bin\skills.exe</code> (added to your PATH)</td></tr>
+      <tr><td>Your memory vault</td><td><code>.brain-skills\memory</code> (an older vault is moved in automatically)</td></tr>
+      <tr><td>Skills library + catalog</td><td><code>.brain-skills\skills</code>, <code>.brain-skills\skills.json</code></td></tr>
+      <tr><td>Claude Code plugin</td><td>Registered automatically if Claude Code is installed</td></tr>
+      <tr><td>Uninstall</td><td>Windows <b>Settings → Apps</b>: "Brain.Skills" and "Skills Installer Hub". Your notes are kept.</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="use" class="wrap">
+  <h2>How to use it</h2>
+  <p class="sub">Everything runs locally on <code>http://127.0.0.1:6789</code>; nothing leaves your PC.</p>
+  <div class="steps">
+    <div class="step"><div><h3>Open the brain</h3><p>Double-click the brain icon in the system tray (or the <b>Brain.Skills</b> Start-menu item). Right-click the icon for the wiki, the Librarian, your vault folder, updates and autostart.</p></div></div>
+    <div class="step"><div><h3>Explore in 3D</h3>
+      <ul>
+        <li><b>Drag</b> to rotate, <b>right-drag</b> to pan, <b>wheel</b> zooms toward the cursor. Zoom out as far as you like.</li>
+        <li><b>Click</b> a node to open its panel; <b>double-click</b> to fly to it. <kbd>/</kbd> searches.</li>
+        <li><kbd>F</kbd> starts free flight: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move, <kbd>Space</kbd>/<kbd>C</kbd> up and down, <kbd>Shift</kbd> to boost, <kbd>Esc</kbd> to exit.</li>
+        <li>Click the legend to show or hide categories. Live conversations keep pulsing.</li>
+      </ul></div></div>
+    <div class="step"><div><h3>Inspect and edit</h3><p>A node's panel shows its details: a conversation's tools, skills, sub-agents and recent calls; a skill's usage across sessions; a note's text. <b>Edit</b> renames it, recolours it, adds a note, edits the markdown file, or appends to its entry log.</p></div></div>
+    <div class="step"><div><h3>Let Claude use it</h3><p>Restart Claude Code after installing. Claude gets <code>brain_search</code>, <code>brain_recent</code>, <code>brain_node</code>, <code>brain_status</code>, <code>brain_add_entry</code> and <code>brain_save_note</code>, and the <code>global-brain</code> skill tells it when to look things up and when to write back. Any MCP client can run <code>brain-system.exe --mcp</code>.</p></div></div>
+    <div class="step"><div><h3>Keep your vault clean</h3><p>The <b>Verifier Librarian</b> tab lists Gold notes that changed without review and links with an obvious fix. Approve to accept, reject to restore the verified version (the rejected text is archived, never lost).</p></div></div>
+    <div class="step"><div><h3>Stay up to date</h3><p>When the tray says <b>Update available</b>, right-click → <b>Update</b>, or click the green badge in the web page. Skills update from the tray too, or run <b>Skills Installer Hub</b> from the Start menu.</p></div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Brain.Skills · <span id="foot-version">…</span> · <a href="https://github.com/tattooinmtl/Brain.Skills/releases">Releases</a> · <a href="https://github.com/tattooinmtl/Brain.Skills">Source</a></span>
+    <span>Made by Global Warning Networks</span>
+  </div>
+</footer>
+
+<script>
+// Version and downloads come live from GitHub on every visit, so this page
+// always matches the repository: VERSION on main, the latest release, and
+// the last commit date.
+(async () => {
+  const repo = 'tattooinmtl/Brain.Skills';
+  const $ = (id) => document.getElementById(id);
+  const fmt = (d) => new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  const get = (url, json = true) => fetch(url, { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(r.status); return json ? r.json() : r.text(); });
+  try {
+    const [version, commit, release] = await Promise.all([
+      get(`https://raw.githubusercontent.com/${repo}/main/VERSION?t=${Date.now()}`, false).then((t) => t.trim()),
+      get(`https://api.github.com/repos/${repo}/commits/main`).catch(() => null),
+      get(`https://api.github.com/repos/${repo}/releases/latest`).catch(() => null),
+    ]);
+    $('v-version').textContent = `v${version}`;
+    $('foot-version').textContent = `v${version}`;
+    const when = commit && commit.commit ? ` · updated ${fmt(commit.commit.committer.date)}` : '';
+    $('v-detail').textContent = when;
+    $('version-status').classList.add('live');
+    if (release) {
+      for (const a of release.assets || []) {
+        if (a.name === 'BrainSkills-Setup.exe') { $('dl-core').href = a.browser_download_url; $('dl-core-hero').href = a.browser_download_url; }
+        if (a.name === 'Skills-Installer-Hub-Setup.exe') $('dl-hub').href = a.browser_download_url;
+      }
+      $('release-meta').innerHTML = '';
+      const link = document.createElement('a');
+      link.href = release.html_url; link.textContent = release.name || release.tag_name;
+      $('release-meta').append('Latest release: ', link, ` · ${fmt(release.published_at)}`);
+    }
+  } catch {
+    $('v-version').textContent = 'latest';
+    $('foot-version').textContent = 'latest';
+  }
+})();
+
+// Shell tabs + copy buttons
+document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('on', x === t));
+  document.querySelectorAll('[data-pane]').forEach((p) => { p.hidden = p.dataset.pane !== t.dataset.shell; });
+}));
+document.querySelectorAll('pre.cmd').forEach((pre) => {
+  const b = document.createElement('button');
+  b.className = 'copy'; b.type = 'button'; b.textContent = 'Copy';
+  b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(pre.firstChild.textContent.trim()); b.textContent = 'Copied ✓'; }
+    catch { b.textContent = 'Select & copy'; }
+    setTimeout(() => { b.textContent = 'Copy'; }, 1800);
+  });
+  pre.append(b);
+});
+</script>
+</body>
+</html>
