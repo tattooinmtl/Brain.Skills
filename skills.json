@@ -1,8 +1,8 @@
 {
   "generated": true,
-  "generatedAt": "2026-09-05T15:35:48Z",
+  "generatedAt": "2026-10-08T15:04:55Z",
   "source": "C:/.skills/skills",
-  "count": 90,
+  "count": 92,
   "nestedCount": 192,
   "skills": [
     {
@@ -209,10 +209,24 @@
       "is_nested": false
     },
     {
+      "name": "gauntlet-loop",
+      "path": "gauntlet-loop",
+      "category": "general",
+      "description": "Turns any goal into one short, paste-ready \"gauntlet loop\" prompt - a prompt that makes an agent set a concrete quality bar, split the work into small judgeable pieces, run a builder and a separate harsh critic on each, compare blind against the bar, and loop until it wins. Works for builds, writing, code, research, or design. Triggers on \"/gauntlet-loop\", \"gauntlet loop\", \"gauntlet this\", \"make a gauntlet prompt\", \"loop until it beats X\".",
+      "is_nested": false
+    },
+    {
       "name": "go-coding",
       "path": "go-coding",
       "category": "general",
       "description": "Go environment setup, syntax rules, best practices, and project scaffolding.",
+      "is_nested": false
+    },
+    {
+      "name": "hf-cli",
+      "path": "hf-cli",
+      "category": "general",
+      "description": "Hugging Face Hub CLI (`hf`) for downloading, uploading, and managing models, datasets, spaces, buckets, repos, papers, jobs, and more on the Hugging Face Hub. Use when: handling authentication; managing local cache; managing Hugging Face Buckets; running or scheduling jobs on Hugging Face infrastructure; managing Hugging Face repos; discussions and pull requests; browsing models, datasets and spaces; reading, searching, or browsing academic papers; managing collections; querying datasets; configuring spaces; setting up webhooks; or deploying and managing HF Inference Endpoints. Make sure to use this skill whenever the user mentions 'hf', 'huggingface', 'Hugging Face', 'huggingface-cli', or 'hugging face cli', or wants to do anything related to the Hugging Face ecosystem and to AI and ML in general. Also use for cloud storage needs like training checkpoints, data pipelines, or agent traces. Use even if the user doesn't explicitly ask for a CLI command. Replaces the deprecated `huggingface-cli`.",
       "is_nested": false
     },
     {
