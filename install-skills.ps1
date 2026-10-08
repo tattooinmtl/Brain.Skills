@@ -38,7 +38,8 @@ $SkillsHubArgs = @($args)
     $ConfigFile = Join-Path $Root 'brain.json'
     $SkillsExe = Join-Path $HubDir 'bin\skills.exe'
     $UninstallKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\BrainSkillsHub'
-    $Shortcut = Join-Path ([Environment]::GetFolderPath('StartMenu')) 'Programs\Skills Installer Hub.lnk'
+    $startMenu = [Environment]::GetFolderPath('StartMenu')
+    $Shortcut = if ($startMenu) { Join-Path $startMenu 'Programs\Skills Installer Hub.lnk' } else { $null }
     $Utf8 = New-Object System.Text.UTF8Encoding $false
     $Headers = @{ 'User-Agent' = 'SkillsInstallerHub' }
 
@@ -107,7 +108,7 @@ $SkillsHubArgs = @($args)
                     if (-not (Get-ChildItem -LiteralPath $d -Force)) { Remove-Item -LiteralPath $d -Force } }
             }
         }
-        Remove-Item -LiteralPath $Shortcut -Force -ErrorAction SilentlyContinue
+        if ($Shortcut) { Remove-Item -LiteralPath $Shortcut -Force -ErrorAction SilentlyContinue }
         Remove-Item -Path $UninstallKey -Recurse -Force -ErrorAction SilentlyContinue
         Set-BrainSkillsDir $null
         Remove-Item -LiteralPath $HubDir -Recurse -Force -ErrorAction SilentlyContinue
@@ -224,14 +225,14 @@ $SkillsHubArgs = @($args)
     $links = @(Get-OurLinks)
 
     # ---------------------------------------------------------------- Windows integration
-    try {
+    if ($Shortcut) { try {
         $lnk = (New-Object -ComObject WScript.Shell).CreateShortcut($Shortcut)
         $lnk.TargetPath = 'powershell.exe'
         $lnk.Arguments = "-NoProfile -ExecutionPolicy Bypass -NoExit -File `"$(Join-Path $HubDir 'update-skills.ps1')`""
         $lnk.WorkingDirectory = $HubDir
         $lnk.Description = 'Update the Brain.Skills skills library'
         $lnk.Save()
-    } catch { }
+    } catch { } }
     try {
         New-Item -Path $UninstallKey -Force | Out-Null
         $values = [ordered]@{

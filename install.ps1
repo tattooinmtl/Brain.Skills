@@ -74,12 +74,16 @@ $BrainSkillsArgs = @($args)
         Start-Sleep -Seconds 1
     }
 
+    # Start menu + desktop .lnk paths (skips folders Windows can't resolve).
+    function Get-ShortcutPaths {
+        foreach ($pair in @(@('StartMenu', 'Programs\Brain.Skills.lnk'), @('Desktop', 'Brain.Skills.lnk'))) {
+            $base = [Environment]::GetFolderPath($pair[0])
+            if ($base) { Join-Path $base $pair[1] }
+        }
+    }
+
     function Set-Shortcuts([switch]$Create) {
-        $places = @(
-            (Join-Path ([Environment]::GetFolderPath('StartMenu')) 'Programs\Brain.Skills.lnk'),
-            (Join-Path ([Environment]::GetFolderPath('Desktop')) 'Brain.Skills.lnk')
-        )
-        foreach ($p in $places) {
+        foreach ($p in (Get-ShortcutPaths)) {
             if (-not $Create -and -not (Test-Path $p)) { continue }   # a deleted desktop icon stays deleted
             if ($Create -and $env:BRAINSKILLS_NO_DESKTOP -and $p -like '*Desktop*') { continue }
             try {
@@ -130,7 +134,7 @@ $BrainSkillsArgs = @($args)
             & cmd /c "claude plugin uninstall global-brain@global-brain >nul 2>&1"
             & cmd /c "claude plugin marketplace remove global-brain >nul 2>&1"
         }
-        foreach ($p in @((Join-Path ([Environment]::GetFolderPath('StartMenu')) 'Programs\Brain.Skills.lnk'), (Join-Path ([Environment]::GetFolderPath('Desktop')) 'Brain.Skills.lnk'))) {
+        foreach ($p in (Get-ShortcutPaths)) {
             Remove-Item -LiteralPath $p -Force -ErrorAction SilentlyContinue
         }
         Set-UserPath -Remove
