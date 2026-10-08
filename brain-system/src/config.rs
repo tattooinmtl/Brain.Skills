@@ -5,7 +5,7 @@
 //!   1. Env var override (BRAIN_VAULT_DIR / BRAIN_SKILLS_DIR / BRAIN_PORT ...)
 //!   2. `<exe-dir>/../<name>` — assumes exe lives in `<repo>/bin/`
 //!   3. Sibling of exe (`<exe-dir>/<name>`)
-//!   4. Hardcoded `C:\.skills\...` fallback (last resort for legacy installs)
+//!   4. The per-user install folder `%USERPROFILE%\.brain-skills\...`
 
 use std::env;
 use std::path::PathBuf;
@@ -29,12 +29,18 @@ fn env_dir(var: &str) -> Option<PathBuf> {
     env::var(var).ok().map(PathBuf::from).filter(|p| p.exists())
 }
 
-fn repo_relative(name: &str, legacy: &str) -> PathBuf {
+/// `%USERPROFILE%\.brain-skills`: where the installers put everything.
+pub fn user_root() -> PathBuf {
+    home_dir().unwrap_or_else(|| PathBuf::from(".")).join(".brain-skills")
+}
+
+/// `<repo>/<name>` next to a dev build, else the user install folder.
+fn repo_relative(name: &str) -> PathBuf {
     let mut candidates = Vec::new();
     if let Some(r) = repo_root() { candidates.push(r.join(name)); }
     if let Some(d) = exe_dir() { candidates.push(d.join(name)); }
-    candidates.push(PathBuf::from(legacy));
-    first_existing(&candidates).unwrap_or_else(|| PathBuf::from(legacy))
+    candidates.push(user_root().join(name));
+    first_existing(&candidates).unwrap_or_else(|| user_root().join(name))
 }
 
 /// HTTP port. `BRAIN_PORT` overrides (useful to run a second instance for testing).
@@ -78,7 +84,7 @@ pub fn vault_dir() -> PathBuf {
     env_dir("BRAIN_VAULT_DIR")
         .or_else(|| setting_dir("vault_dir"))
         .or_else(|| install_root().map(|r| r.join("memory")).filter(|p| p.exists()))
-        .unwrap_or_else(|| repo_relative("memory", r"C:\.skills\memory"))
+        .unwrap_or_else(|| repo_relative("memory"))
 }
 
 /// The real skills library (folders containing SKILL.md).
@@ -86,12 +92,12 @@ pub fn skills_dir() -> PathBuf {
     env_dir("BRAIN_SKILLS_DIR")
         .or_else(|| setting_dir("skills_dir"))
         .or_else(|| install_root().map(|r| r.join("skills")).filter(|p| p.exists()))
-        .unwrap_or_else(|| repo_relative("skills", r"C:\.skills\skills"))
+        .unwrap_or_else(|| repo_relative("skills"))
 }
 
 /// Repo root shown by the tray's "Open Skills Directory".
 pub fn repo_dir() -> PathBuf {
-    skills_dir().parent().map(|p| p.to_path_buf()).unwrap_or_else(|| PathBuf::from(r"C:\.skills"))
+    skills_dir().parent().map(|p| p.to_path_buf()).unwrap_or_else(user_root)
 }
 
 /// Brain-owned state inside the vault (overlay edits, verifier manifest, event sink).
@@ -123,9 +129,9 @@ pub fn logo_path() -> PathBuf {
     let mut candidates = Vec::new();
     if let Some(r) = repo_root() { candidates.push(r.join("assets").join("logo.jpg")); }
     if let Some(d) = exe_dir() { candidates.push(d.join("logo.jpg")); }
-    candidates.push(PathBuf::from(r"C:\.skills\assets\logo.jpg"));
-    candidates.push(PathBuf::from(r"C:\.skills\bin\logo.jpg"));
-    first_existing(&candidates).unwrap_or_else(|| PathBuf::from(r"C:\.skills\assets\logo.jpg"))
+    let installed = user_root().join("app").join("assets").join("logo.jpg");
+    candidates.push(installed.clone());
+    first_existing(&candidates).unwrap_or(installed)
 }
 
 /// Tray icon (.ico) for the Windows system tray.
@@ -133,8 +139,9 @@ pub fn icon_path() -> PathBuf {
     let mut candidates = Vec::new();
     if let Some(r) = repo_root() { candidates.push(r.join("assets").join("brain.ico")); }
     if let Some(d) = exe_dir() { candidates.push(d.join("brain.ico")); }
-    candidates.push(PathBuf::from(r"C:\.skills\assets\brain.ico"));
-    first_existing(&candidates).unwrap_or_else(|| PathBuf::from(r"C:\.skills\assets\brain.ico"))
+    let installed = user_root().join("app").join("assets").join("brain.ico");
+    candidates.push(installed.clone());
+    first_existing(&candidates).unwrap_or(installed)
 }
 
 /// The allowed Origin for browser-based mutating requests.

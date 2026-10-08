@@ -76,6 +76,16 @@ $SkillsHubArgs = @($args)
             if ($item -and $item.LinkType -and (@($item.Target) | Where-Object { $_ -and ($_.TrimStart('\?') -replace '^UNC\\', '\\').TrimEnd('\') -eq $want.TrimEnd('\') })) { $link }
         })
     }
+    # <root>\skills.json + skills\INDEX.md: the catalog other agents (e.g. Omni's
+    # skillIndex) read. Regenerated after every install/update.
+    function Update-Catalog {
+        if (-not (Test-Path $SkillsExe)) { return }
+        $env:SKILLS_ROOT = $Root
+        & $SkillsExe sync 2>&1 | Out-Null
+        Remove-Item Env:SKILLS_ROOT -ErrorAction SilentlyContinue
+        if (Test-Path (Join-Path $Root 'skills.json')) { Say "Catalog: $(Join-Path $Root 'skills.json')" DarkGray }
+    }
+
     function Set-BrainSkillsDir([string]$dir) {
         $cfg = Read-Json $ConfigFile
         $vault = if ($cfg -and $cfg.vault_dir) { $cfg.vault_dir } else { $null }
@@ -109,6 +119,7 @@ $SkillsHubArgs = @($args)
                     if (-not (Get-ChildItem -LiteralPath $d -Force)) { Remove-Item -LiteralPath $d -Force } }
             }
         }
+        Remove-Item -LiteralPath (Join-Path $Root 'skills.json') -Force -ErrorAction SilentlyContinue
         if ($Shortcut) { Remove-Item -LiteralPath $Shortcut -Force -ErrorAction SilentlyContinue }
         Remove-Item -Path $UninstallKey -Recurse -Force -ErrorAction SilentlyContinue
         Set-BrainSkillsDir $null
@@ -146,6 +157,7 @@ $SkillsHubArgs = @($args)
     $gone = @(if ($old -and $old.files) { $old.files | Where-Object { -not $newTargets[$_.t] } })
 
     if (-not $todo.Count -and -not $gone.Count -and -not $Relink -and $old) {
+        if (-not (Test-Path (Join-Path $Root 'skills.json'))) { Update-Catalog }
         Say "Skills $label are up to date ($skillCount skills)." Green
         return
     }
@@ -227,6 +239,7 @@ $SkillsHubArgs = @($args)
         & $SkillsExe @linkArgs
         Remove-Item Env:SKILLS_ROOT -ErrorAction SilentlyContinue
     }
+    Update-Catalog
     $links = @(Get-OurLinks)
 
     # ---------------------------------------------------------------- Windows integration
