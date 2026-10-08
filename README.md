@@ -4,6 +4,10 @@ A unified, high-performance library of AI-agent skills, memory protocols, and ha
 
 Plugs into every major AI agent (Claude Code, OpenAI Codex, Cursor, Gemini, Grok, Kimi, MiniMax, Hermes, Omni, NimAgent, and custom harnesses).
 
+**Website, downloads and docs: https://tattooinmtl.github.io/Brain.Skills/**
+
+![The Global Brain's 3D neural view](website/assets/brain-3d.jpg)
+
 ---
 
 ## 🏗️ Architecture: Go CLI + Rust Daemon
