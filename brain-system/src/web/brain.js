@@ -285,8 +285,20 @@ export class NeuralBrain {
     return (KINDS[n.k] || KINDS.note).color;
   }
 
+  /** End a node drag: the worker lets the node go and it springs back. */
+  endDrag() {
+    if (!this.drag) return;
+    this.worker.postMessage({ type: 'release', i: this.drag.i });
+    this.drag = null;
+    this.controls.enabled = !this.fly.on;
+    this.lastInteract = performance.now();
+  }
+
   /** Replace or merge the graph. Existing nodes keep their position. */
   setGraph(graph) {
+    // Node indices change with the graph: a drag in progress would move the wrong node.
+    this.drag = null;
+    this.controls.enabled = !this.fly.on;
     const old = new Map();
     if (this.posArr) this.nodes.forEach((nd, i) => old.set(nd.id, [this.posArr[i * 3], this.posArr[i * 3 + 1], this.posArr[i * 3 + 2]]));
     const selectedId = this.selected >= 0 ? this.nodes[this.selected].id : null;
@@ -594,6 +606,8 @@ export class NeuralBrain {
     if (on === this.fly.on) return;
     const f = this.fly;
     if (on) {
+      if (this.follow.on) this.setFollow(false);
+      this.endDrag();
       const dir = new THREE.Vector3();
       this.camera.getWorldDirection(dir);
       f.yaw = Math.atan2(-dir.x, -dir.z);
@@ -724,6 +738,7 @@ export class NeuralBrain {
       if (this.pointer.down && Math.hypot(e.clientX - this.pointer.down[0], e.clientY - this.pointer.down[1]) > 4) this.pointer.moved = true;
       this.pointerDirty = true;
     });
+    c.addEventListener('pointercancel', () => { this.pointer.down = null; this.endDrag(); });
     c.addEventListener('pointerleave', () => { this.pointer.x = -1; this.hovered = -1; c.style.cursor = ''; });
     const local = (e) => { const r = c.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
     c.addEventListener('pointerdown', (e) => {
@@ -757,12 +772,7 @@ export class NeuralBrain {
     c.addEventListener('pointerup', (e) => {
       const wasClick = this.pointer.down && !this.pointer.moved && e.button === 0;
       this.pointer.down = null;
-      if (this.drag) {
-        this.worker.postMessage({ type: 'release', i: this.drag.i });
-        this.drag = null;
-        this.controls.enabled = !this.fly.on;
-        this.lastInteract = performance.now();
-      }
+      this.endDrag();
       if (!wasClick || this.fly.on) return;
       const i = this.pick(...local(e));
       if (i >= 0) this.select(this.nodes[i].id);
