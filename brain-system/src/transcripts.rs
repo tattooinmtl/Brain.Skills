@@ -734,10 +734,11 @@ pub fn cache_path() -> PathBuf {
     config::cache_dir().join("sessions-index.json")
 }
 
-pub fn write_cache(bytes: &[u8]) {
+/// Returns false if the index could not be written (the caller retries later).
+pub fn write_cache(bytes: &[u8]) -> bool {
     let p = cache_path();
     if let Some(d) = p.parent() { let _ = fs::create_dir_all(d); }
-    let _ = util::atomic_write(&p, bytes);
+    util::atomic_write(&p, bytes).is_ok()
 }
 
 fn read_sub_meta(jsonl: &Path) -> (String, String) {

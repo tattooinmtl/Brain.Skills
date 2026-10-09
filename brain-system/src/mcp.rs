@@ -283,13 +283,30 @@ fn session_lines(cs: &[Value], limit: usize) -> String {
 }
 
 fn project(a: &Value) -> Result<String, String> {
-    let q = match a["project"].as_str().map(str::trim).filter(|s| !s.is_empty()) {
-        Some(p) => p.to_string(),
-        None => std::env::current_dir().map(|p| p.to_string_lossy().to_string()).map_err(|e| e.to_string())?,
+    // An explicit project wins; otherwise the agent's folder, which MCP hosts
+    // expose in different ways (the server's own cwd may be the plugin folder).
+    let candidates: Vec<String> = match a["project"].as_str().map(str::trim).filter(|s| !s.is_empty()) {
+        Some(p) => vec![p.to_string()],
+        None => ["CLAUDE_PROJECT_DIR", "PWD", "INIT_CWD"].iter().filter_map(|v| std::env::var(v).ok())
+            .chain(std::env::current_dir().ok().map(|p| p.to_string_lossy().to_string()))
+            .filter(|s| !s.trim().is_empty()).collect(),
     };
     let limit = a["limit"].as_u64().unwrap_or(15).clamp(1, 60) as usize;
-    let d = api_get(&format!("/api/brain/project?q={}", enc(&q)))
-        .map_err(|e| format!("{} (looked for \"{}\")", e, q))?;
+    let d = candidates.iter().find_map(|q| api_get(&format!("/api/brain/project?q={}", enc(q))).ok());
+    let Some(d) = d else {
+        // Nothing matched: show the projects that do exist so the agent can pick one.
+        let recent = api_get("/api/brain/recent?limit=40&sort=weight").ok().and_then(|v| v.as_array().cloned()).unwrap_or_default();
+        let mut seen: Vec<String> = Vec::new();
+        for c in &recent {
+            let p = c["project"].as_str().unwrap_or("").to_string();
+            if !p.is_empty() && !seen.contains(&p) { seen.push(p); }
+        }
+        return Err(format!(
+            "No brain project matches {}. Pass `project` (a folder path or name). Known projects, heaviest first:\n{}",
+            if candidates.is_empty() { "the current folder".to_string() } else { candidates.iter().map(|c| format!("\"{}\"", c)).collect::<Vec<_>>().join(" or ") },
+            seen.iter().take(15).map(|p| format!("- {}", p)).collect::<Vec<_>>().join("\n"),
+        ));
+    };
     let mut o = format!("# Project {}\nid: {}\n", d["title"].as_str().unwrap_or(""), d["id"].as_str().unwrap_or(""));
     if let Some(m) = d["meta"].as_object() {
         let line: Vec<String> = m.iter().filter_map(|(k, v)| {

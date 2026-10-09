@@ -149,7 +149,7 @@ pub fn start_indexer() {
         // Saved index first: a restart only reads what was appended since.
         let mut ing = Ingest::load_cache();
         ing.poll(false);
-        if let Some(bytes) = ing.snapshot() { transcripts::write_cache(&bytes); }
+        if let Some(bytes) = ing.snapshot() { if !transcripts::write_cache(&bytes) { ing.unsaved = true; } }
         {
             let mut b = write();
             b.ingest = ing;
@@ -171,7 +171,9 @@ pub fn start_indexer() {
             if structural || stale { b.rebuild(); }
             let snap = if tick % 40 == 0 { b.ingest.snapshot() } else { None };
             drop(b);
-            if let Some(bytes) = snap { transcripts::write_cache(&bytes); }
+            if let Some(bytes) = snap {
+                if !transcripts::write_cache(&bytes) { write().ingest.unsaved = true; }
+            }
         }
     });
 
