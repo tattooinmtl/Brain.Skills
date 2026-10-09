@@ -214,6 +214,9 @@ function ensureBrain() {
     updateLegendCounts(s.counts);
   });
   brain.on('fly', (on) => { $('fly-hint').hidden = !on; $('hint').hidden = on; });
+  brain.on('follow', (on) => { $('btn-follow').classList.toggle('on', on); });
+  brain.on('fps', (v) => { $('fps').textContent = `${v} fps`; });
+  applySettings();
   brain.on('flyspeed', (v) => { $('fly-speed').textContent = `(${Math.round(v)} u/s)`; });
   pollBrain(true);
 }
@@ -236,6 +239,7 @@ async function pollBrain(force = false) {
       for (const ev of act.events) {
         state.brain.firePath(ev.path, 1);
         feed(ev);
+        state.brain.followEvent(ev.path, followCardHtml(ev));
       }
       if (state.selected && act.events.some((ev) => ev.path.includes(state.selected)) && !state.editing) refreshPanel();
     }
@@ -259,6 +263,101 @@ function feed(ev) {
   while (box.children.length > 7) box.lastChild.remove();
   setTimeout(() => el.remove(), 9000);
 }
+
+// ------------------------------------------------------------------ follow live
+// What a live event is doing, in one word, for the follow-camera card.
+const TOOL_ACTIONS = [
+  [/^(read|read_file|read_multiple_files|notebookread|view|cat)$/i, 'Reading', '📖'],
+  [/^(write|write_file|create_file|write_pdf)$/i, 'Writing', '✍️'],
+  [/^(edit|multiedit|notebookedit|edit_file|edit_block|apply_patch|str_replace.*)$/i, 'Editing', '✏️'],
+  [/^(move_file|move|rename)$/i, 'Moving', '📦'],
+  [/^(bash|shell|shell_command|exec_command|local_shell_call|powershell|start_process|run_in_terminal)$/i, 'Running', '⚡'],
+  [/^(grep|glob|search|start_search|find|list_directory|ls)$/i, 'Searching', '🔍'],
+  [/^webfetch$|fetch|navigate|get_page_text/i, 'Browsing', '🌐'],
+  [/^websearch$|web_search/i, 'Searching the web', '🌐'],
+  [/^(agent|task)$/i, 'Spawning a sub-agent', '🧬'],
+  [/^skill$/i, 'Using a skill', '🎯'],
+  [/^(todowrite|update_plan|writing-plans)$/i, 'Planning', '🗒️'],
+  [/^(askuserquestion|request_user_input)$/i, 'Asking you', '❓'],
+  [/screenshot|computer|click/i, 'Looking at the screen', '👁️'],
+];
+
+function describeEvent(ev) {
+  if (ev.kind === 'prompt') return { verb: 'New prompt', icon: '💬', detail: ev.detail, color: KINDS.conversation.color };
+  if (ev.kind === 'skill') return { verb: 'Using a skill', icon: '🎯', detail: ev.name, color: KINDS.skill.color };
+  if (ev.kind === 'subagent') return { verb: 'Sub-agent', icon: '🧬', detail: ev.name, color: KINDS.subagent.color };
+  if (ev.kind === 'touch') return { verb: 'Touching a brain file', icon: '📄', detail: ev.name.split('/').pop(), color: KINDS.note.color };
+  let name = ev.name, server = '';
+  const mcp = /^mcp__(.+?)__(.+)$/.exec(name);
+  if (mcp) { server = mcp[1].replace(/^plugin_[^_]+_/, ''); name = mcp[2]; }
+  const hit = TOOL_ACTIONS.find(([re]) => re.test(name));
+  const verb = hit ? hit[1] : (server ? `${server} · ${name}` : name);
+  return { verb, icon: hit ? hit[2] : (server ? '🔌' : '🛠️'), detail: ev.detail || (hit ? name : ''), color: KINDS.tools.color };
+}
+
+function followCardHtml(ev) {
+  const d = describeEvent(ev);
+  const node = (pre) => { const id = ev.path.find((p) => p.startsWith(pre)); return id ? state.brain.nodes[state.brain.index.get(id)] : null; };
+  const conv = node('conv:'), proj = state.brain.nodes[state.brain.index.get(state.brain.neighbors(conv?.id || '').find((n) => n.k === 'project')?.id)];
+  const meta = [conv?.l, proj?.l].filter(Boolean).join('  ·  ');
+  return `<div class="fc-verb" style="color:${esc(d.color)}"><i>${d.icon}</i>${esc(d.verb)}</div>`
+    + (d.detail ? `<div class="fc-detail">${esc(d.detail.length > 140 ? d.detail.slice(0, 139) + '…' : d.detail)}</div>` : '')
+    + (meta ? `<div class="fc-meta">${esc(meta)}</div>` : '');
+}
+
+// ------------------------------------------------------------------ settings (saved per browser)
+const SETTINGS_KEY = 'brain.settings.v1';
+const DEFAULTS = {
+  labels: true, glow: true, edges: true, sparks: true, stars: true, orbit: true, bouncy: false, spread: 1,
+  followHideOthers: false, followHideNames: false, followDist: '180', followPace: 'normal',
+};
+const PACE = { slow: { hop: 1000, dwell: 2800 }, normal: { hop: 650, dwell: 1600 }, fast: { hop: 380, dwell: 900 } };
+const settings = (() => {
+  try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}') }; } catch { return { ...DEFAULTS }; }
+})();
+const saveSettings = () => { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch { /* private mode */ } };
+
+function applySetting(key) {
+  const b = state.brain;
+  if (!b) return;
+  const v = settings[key];
+  if (['labels', 'glow', 'edges', 'sparks', 'stars', 'orbit', 'bouncy'].includes(key)) b.setLayer(key, v);
+  else if (key === 'spread') b.setSpread(Number(v));
+  else if (key === 'followHideOthers') b.setFollowOptions({ hideOthers: v });
+  else if (key === 'followHideNames') b.setFollowOptions({ hideNames: v });
+  else if (key === 'followDist') b.setFollowOptions({ dist: Number(v) });
+  else if (key === 'followPace') b.setFollowOptions(PACE[v] || PACE.normal);
+}
+function applySettings() {
+  document.querySelectorAll('[data-set]').forEach((el) => {
+    const v = settings[el.dataset.set];
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = String(v);
+  });
+  Object.keys(DEFAULTS).forEach(applySetting);
+}
+document.querySelectorAll('[data-set]').forEach((el) => {
+  el.addEventListener(el.type === 'range' ? 'input' : 'change', () => {
+    const k = el.dataset.set;
+    settings[k] = el.type === 'checkbox' ? el.checked : el.type === 'range' ? Number(el.value) : el.value;
+    saveSettings();
+    applySetting(k);
+  });
+});
+const toggleMenu = (btn, menu) => {
+  const open = $(menu).hidden;
+  $(menu).hidden = !open;
+  $(btn).classList.toggle('open', open);
+  $(btn).setAttribute('aria-expanded', String(open));
+};
+$('btn-layers').addEventListener('click', () => toggleMenu('btn-layers', 'menu-layers'));
+$('btn-follow-cfg').addEventListener('click', () => toggleMenu('btn-follow-cfg', 'menu-follow'));
+const toggleFollow = () => {
+  if (!state.brain) return;
+  const on = !state.brain.follow.on;
+  state.brain.setFollow(on);
+  if (on) toast('Following live activity — the camera jumps to each new action.');
+};
+$('btn-follow').addEventListener('click', toggleFollow);
 
 function buildLegend() {
   const box = $('legend');
@@ -328,9 +427,6 @@ function chooseResult(id) {
 $('btn-fit').addEventListener('click', () => state.brain?.fitAll(true));
 $('btn-fly').addEventListener('click', () => state.brain?.setFly(true));
 $('btn-reheat').addEventListener('click', () => state.brain?.reheat());
-$('tg-labels').addEventListener('change', (e) => { if (state.brain) state.brain.showLabels = e.target.checked; });
-$('tg-bloom').addEventListener('change', (e) => state.brain?.setBloom(e.target.checked));
-$('tg-orbit').addEventListener('change', (e) => state.brain?.setAutoRotate(e.target.checked));
 
 document.addEventListener('keydown', (e) => {
   if (state.tab !== 'brain' || !state.brain) return;
@@ -338,8 +434,9 @@ document.addEventListener('keydown', (e) => {
   if (typing) return;
   if ((e.key === 'f' || e.key === 'F') && !e.repeat) { e.preventDefault(); state.brain.setFly(!state.brain.fly.on); return; }
   if (state.brain.fly.on) return;
-  if (e.key === 'Escape') { state.brain.select(null); return; }
+  if (e.key === 'Escape') { if (state.brain.follow.on) state.brain.setFollow(false); else state.brain.select(null); return; }
   if (e.key === '/') { e.preventDefault(); $('brain-search').focus(); }
+  if ((e.key === 'l' || e.key === 'L') && !e.repeat) { e.preventDefault(); toggleFollow(); }
 });
 
 // ------------------------------------------------------------------ side panel
@@ -386,7 +483,12 @@ function viewHtml(d, n) {
   let h = '';
   if (d.edit?.note) h += `<div class="sec"><h3>Your note</h3><div class="entry" style="border-color:var(--cyan)">${esc(d.edit.note)}</div></div>`;
   if (d.description) h += `<div class="sec"><h3>Description</h3><div>${esc(d.description)}</div></div>`;
-  if (d.first_prompt) h += `<div class="sec"><h3>First prompt</h3><div class="entry" style="border-color:var(--blue)">${esc(d.first_prompt)}</div></div>`;
+  if (d.prompts_timeline?.length) {
+    const rows = d.prompts_timeline.map((p, i) => (i === 4 && d.prompts_skipped ? `<div class="muted" style="font-size:12px">… ${d.prompts_skipped} more prompts …</div>` : '') +
+      `<div class="entry" style="border-color:var(--blue)"><span class="when">${esc(fmtTime(p.ts))}</span>${esc(p.text)}</div>`).join('');
+    h += `<div class="sec"><h3>What was asked</h3><div class="entries">${rows}</div></div>`;
+  } else if (d.first_prompt) h += `<div class="sec"><h3>First prompt</h3><div class="entry" style="border-color:var(--blue)">${esc(d.first_prompt)}</div></div>`;
+  if (d.last_reply) h += `<div class="sec"><h3>Last reply</h3><div class="entry">${esc(d.last_reply)}</div></div>`;
   const meta = Object.entries(d.meta || {}).filter(([, v]) => v !== '' && v !== null);
   if (meta.length) h += `<div class="sec"><h3>Details</h3><dl class="kv">${meta.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl></div>`;
 
@@ -398,7 +500,9 @@ function viewHtml(d, n) {
   if (d.skills?.length) h += `<div class="sec"><h3>Skills used</h3><div class="chips">${d.skills.map(([s, c]) => chip(skillNodeId(s), `${s} ×${c}`, 'skill')).join('')}</div></div>`;
   if (d.subagents?.length) h += `<div class="sec"><h3>Sub-agents</h3><div class="chips">${d.subagents.map((s) => chip(s.id, `${s.description || s.type} · ${s.calls} calls`, 'subagent')).join('')}</div></div>`;
   if (d.usage?.length) h += `<div class="sec"><h3>Used in ${d.usage.length} conversation(s)</h3><div class="chips">${d.usage.map((u) => chip(u.id, `${u.title} ×${u.uses}`, 'conversation')).join('')}</div></div>`;
-  if (d.conversations?.length) h += `<div class="sec"><h3>Conversations</h3><div class="chips">${d.conversations.map((c) => chip(c.id, c.title, 'conversation')).join('')}</div></div>`;
+  if (d.conversations?.length) h += `<div class="sec"><h3>Sessions (heaviest first)</h3><div class="chips">${d.conversations.map((c) => chip(c.id, c.weight != null ? `${c.title} · w ${c.weight}` : c.title, 'conversation')).join('')}</div></div>`;
+  if (d.files_changed?.length) h += `<div class="sec"><h3>Files changed</h3><div class="bars">${d.files_changed.slice(0, 20).map(([f, c]) => `
+      <div class="bar"><span class="name" title="${esc(f)}">${esc(f.split('/').slice(-2).join('/'))}</span><span class="track"><span class="fill" style="width:${(c / d.files_changed[0][1]) * 100}%"></span></span><span class="v">${c}</span></div>`).join('')}</div></div>`;
   if (d.touched?.length) h += `<div class="sec"><h3>Brain files touched</h3><div class="chips">${d.touched.map((t) => { const nn = state.brain.nodes[state.brain.index.get(t.id)]; return chip(t.id, `${nn ? nn.l : t.path.split('/').pop()} ×${t.count}`, nn?.k || 'note', nn?.x); }).join('')}</div></div>`;
   if (d.linked_from?.length) h += `<div class="sec"><h3>Linked from</h3><div class="chips">${d.linked_from.filter((l) => l.id).map((l) => chip(l.id, l.title, 'note')).join('')}</div></div>`;
 
@@ -413,7 +517,7 @@ function viewHtml(d, n) {
 
   if (d.calls?.length) {
     h += `<div class="sec"><h3>Recent calls</h3><div class="calls">${d.calls.slice(0, 25).map((c) => `
-      <div class="call"><div class="top"><span class="tool">${esc(c.tool)}</span><span class="when">${esc(fmtTime(c.ts))}</span></div>
+      <div class="call"><div class="top"><span class="tool">${esc(c.tool)}</span><span class="when">${esc(fmtTime(c.ts))}${c.conversation ? ' · ' + esc(c.conversation) : ''}</span></div>
       ${c.args ? `<div class="args">${esc(c.args)}</div>` : ''}${c.result ? `<div class="res">→ ${esc(c.result)}</div>` : ''}</div>`).join('')}</div></div>`;
   }
   if (d.files?.length) {

@@ -79,6 +79,7 @@ fn main() {
                 println!("  BRAIN_SKILLS_DIR      Skills library path");
                 println!("  BRAIN_CLAUDE_PROJECTS Claude Code transcripts (default ~/.claude/projects)");
                 println!("  BRAIN_CODEX_SESSIONS  Codex rollouts (default ~/.codex/sessions)");
+                println!("  BRAIN_CACHE_DIR       Session index cache (default ~/.brain-skills/cache)");
             }
         }
         return;

@@ -433,8 +433,19 @@ fn handle(mut rq: Request, port: u16) {
         }
         (Method::Get, "/api/brain/recent") => {
             let limit = util::param(&params, "limit").and_then(|s| s.parse().ok()).unwrap_or(15usize).min(200);
-            let v = brain::read().recent(limit, util::param(&params, "q"));
+            let v = brain::read().recent(limit, util::param(&params, "q"), util::param(&params, "sort"));
             send_json(rq, 200, &Value::Array(v))
+        }
+        (Method::Get, "/api/brain/project") => {
+            // ?q= a project id, a path inside it (e.g. the agent's cwd) or a name.
+            let q = util::param(&params, "q").unwrap_or("");
+            let b = brain::read();
+            let d = b.find_project(q).and_then(|id| b.node_detail(&id));
+            drop(b);
+            match d {
+                Some(v) => send_json(rq, 200, &v),
+                None => send_err(rq, 404, "No project matches; try brain_recent or a folder name"),
+            }
         }
         (Method::Post, "/api/brain/note") => {
             let body = match read_json(&mut rq) { Ok(v) => v, Err(e) => return send_err(rq, 400, &e) };

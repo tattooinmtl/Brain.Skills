@@ -1,17 +1,23 @@
 //! The brain: one graph over everything the agents know and do.
 //!
-//!   brain ─ project ─ conversation ─┬─ tools (one aggregated node per conversation)
-//!                                   ├─ sub-agent
-//!                                   └─ skill  (one node per skill, shared by every
-//!                                              conversation that used it)
+//!   brain ─ project ─┬─ conversation ─┬─ sub-agent
+//!                    │                └─ vault notes / skills it edited
+//!                    ├─ tools  (one node per project, every call of its sessions)
+//!                    └─ skill  (one node per skill, shared by every project
+//!                               that used it)
 //!   brain ─ Memory Vault ─ folder ─ note / session  (+ [[wikilinks]], ghost targets)
 //!   brain ─ Skills Library ─ category ─ skill ─ nested skill
 //!
 //! A background indexer keeps it current; the HTTP layer serves a cached JSON
 //! snapshot plus a cheap activity feed for pulsing nodes and flowing paths.
+//!
+//! Every conversation gets a weight: how much happened in it (prompts, calls,
+//! edits, sub-agents) scaled by how recent it is (half-life two weeks).
+//! Projects add up their sessions. Agents read the weighted project and
+//! session digests first and only open a transcript when those aren't enough.
 
 use serde_json::{json, Value};
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::Path;
 use std::sync::{Arc, Mutex, OnceLock, RwLock};
 use std::thread;
@@ -19,11 +25,13 @@ use std::time::{Duration, Instant};
 
 use crate::overlay::Overlay;
 use crate::skills::{self, Skill};
-use crate::transcripts::{Conv, Ingest};
+use crate::transcripts::{self, Conv, Ingest};
 use crate::vault::{self, Note, Resolver};
 use crate::{config, util, verifier};
 
 const LIVE_WINDOW_MS: i64 = 120_000;
+/// A session's weight halves every this many days without activity.
+const HALF_LIFE_DAYS: f32 = 14.0;
 
 // Link kinds (index into the client's style table).
 const L_CONTAINS: u8 = 0;
@@ -42,6 +50,8 @@ struct GNode {
     ts: i64,
     extra: String,
     color: String,
+    /// Recency 0..1 (1 = active now); negative = not time-based.
+    r: f32,
 }
 
 #[derive(Default)]
@@ -60,7 +70,7 @@ impl Builder {
             if ts > n.ts { n.ts = ts; }
             return i;
         }
-        self.nodes.push(GNode { id: id.into(), label: label.into(), kind, w, ts, extra: String::new(), color: String::new() });
+        self.nodes.push(GNode { id: id.into(), label: label.into(), kind, w, ts, extra: String::new(), color: String::new(), r: -1.0 });
         self.idx.insert(id.into(), self.nodes.len() - 1);
         self.nodes.len() - 1
     }
@@ -136,8 +146,10 @@ pub fn write() -> std::sync::RwLockWriteGuard<'static, Brain> {
 /// outside the lock so the UI and API stay responsive while it runs.
 pub fn start_indexer() {
     thread::spawn(|| {
-        let mut ing = Ingest::default();
+        // Saved index first: a restart only reads what was appended since.
+        let mut ing = Ingest::load_cache();
         ing.poll(false);
+        if let Some(bytes) = ing.snapshot() { transcripts::write_cache(&bytes); }
         {
             let mut b = write();
             b.ingest = ing;
@@ -157,6 +169,9 @@ pub fn start_indexer() {
             if tick % 40 == 0 { structural |= b.rescan_skills(); }
             let stale = b.ingest.dirty && b.last_rebuild.elapsed() > Duration::from_secs(12);
             if structural || stale { b.rebuild(); }
+            let snap = if tick % 40 == 0 { b.ingest.snapshot() } else { None };
+            drop(b);
+            if let Some(bytes) = snap { transcripts::write_cache(&bytes); }
         }
     });
 
@@ -218,6 +233,7 @@ impl Brain {
         for n in &b.nodes { *counts.entry(n.kind).or_insert(0) += 1; }
         let nodes: Vec<Value> = b.nodes.iter().map(|n| {
             let mut o = json!({ "id": n.id, "l": n.label, "k": n.kind, "w": (n.w * 100.0).round() / 100.0, "t": n.ts });
+            if n.r >= 0.0 { o["r"] = json!((n.r * 100.0).round() / 100.0); }
             if !n.extra.is_empty() { o["x"] = json!(n.extra); }
             if !n.color.is_empty() { o["c"] = json!(n.color); }
             o
@@ -317,10 +333,13 @@ impl Brain {
             }
         }
 
-        // --- conversations -------------------------------------------------
+        // --- projects and their sessions -----------------------------------
+        let now = util::now_ms();
         let mut convs: Vec<&Conv> = self.ingest.convs.values().collect();
         convs.sort_by(|a, c| a.key.cmp(&c.key));
         let ext_cat = "cat:plugins";
+        // project node -> (summed session weight, best recency, total calls)
+        let mut proj_agg: BTreeMap<usize, (f32, f32, u32)> = BTreeMap::new();
         for c in &convs {
             if c.parent.as_ref().map_or(false, |p| self.ingest.convs.contains_key(p)) { continue; }
             let (pid, plabel) = project_of(&c.cwd);
@@ -328,23 +347,24 @@ impl Brain {
             b.link(brain, p, L_CONTAINS);
             lk.conv_project.insert(c.key.clone(), pid.clone());
 
-            let cid = format!("conv:{}", c.key);
-            let activity = (c.prompts + c.turns) as f32;
-            let ci = b.node(&cid, &conv_label(c), "conversation", 2.0 + (1.0 + activity).log2() * 0.45, c.last);
-            b.nodes[ci].extra = c.harness.clone();
-            b.link(p, ci, L_CONTAINS);
-            b.nodes[p].w += 0.25;
-
+            let (score, r) = conv_score(c, now);
             let total = c.total_calls();
-            let hub = if total > 0 {
-                let ti = b.node(&format!("tools:{}", c.key), &format!("Tools · {}", total), "tools", 1.4 + (1.0 + total as f32).log2() * 0.35, c.last);
-                b.link(ci, ti, L_TOOLS);
-                ti
-            } else { ci };
+            let agg = proj_agg.entry(p).or_insert((0.0, 0.0, 0));
+            agg.0 += score; agg.1 = agg.1.max(r); agg.2 += total;
 
+            let ci = b.node(&format!("conv:{}", c.key), &conv_label(c), "conversation", 1.5 + score * 0.6, c.last);
+            b.nodes[ci].extra = c.harness.clone();
+            b.nodes[ci].r = r;
+            b.link(p, ci, L_CONTAINS);
+
+            if total > 0 {
+                let ti = b.node(&format!("tools:{}", pid), "Tools", "tools", 1.4, c.last);
+                b.link(p, ti, L_TOOLS);
+            }
             for s in &c.subs {
                 let si = b.node(&format!("sub:{}:{}", c.key, s.key), &sub_label(&s.agent_type, &s.description), "subagent", 1.4 + (1.0 + s.calls as f32).log2() * 0.3, s.last);
                 b.nodes[si].extra = s.agent_type.clone();
+                b.nodes[si].r = r;
                 b.link(ci, si, L_SPAWN);
                 for name in s.skills.keys() {
                     let k = self.skill_node(&mut b, &mut lk, name, skills_hub, ext_cat);
@@ -358,18 +378,30 @@ impl Brain {
             for child in convs.iter().filter(|x| x.parent.as_deref() == Some(c.key.as_str())) {
                 let si = b.node(&format!("sub:{}:{}", c.key, child.key), &sub_label("thread", &child.first_prompt), "subagent", 1.4 + (1.0 + child.total_calls() as f32).log2() * 0.3, child.last);
                 b.nodes[si].extra = "thread".into();
+                b.nodes[si].r = r;
                 b.link(ci, si, L_SPAWN);
             }
+            // Skills hang off the project: one edge per project, not per session.
             for (name, n) in &c.skills {
                 let k = self.skill_node(&mut b, &mut lk, name, skills_hub, ext_cat);
                 b.nodes[k].w += (*n as f32).min(20.0) * 0.08;
                 if c.last > b.nodes[k].ts { b.nodes[k].ts = c.last; }
-                b.link(hub, k, L_USES);
+                b.link(p, k, L_USES);
             }
             for path in c.touched.keys() {
                 if let Some(t) = self.touched_node(&lk, path).and_then(|id| b.idx.get(&id).copied()) {
                     b.link(ci, t, L_TOUCH);
                 }
+            }
+        }
+        for (&p, &(score, r, calls)) in &proj_agg {
+            b.nodes[p].w = 3.0 + (1.0 + score).ln();
+            b.nodes[p].r = r;
+            let tid = format!("tools:{}", b.nodes[p].id);
+            if let Some(&ti) = b.idx.get(&tid) {
+                b.nodes[ti].label = format!("Tools · {}", calls);
+                b.nodes[ti].w = 1.4 + (1.0 + calls as f32).log2() * 0.35;
+                b.nodes[ti].r = r;
             }
         }
 
@@ -438,16 +470,16 @@ impl Brain {
                 let conv = format!("conv:{}", e.conv);
                 if !self.lookup.node_ids.contains(&conv) { return None; }
                 let proj = self.lookup.conv_project.get(&e.conv).cloned().unwrap_or_default();
-                let tools = format!("tools:{}", e.conv);
+                let tools = format!("tools:{}", proj);
                 let tools = if self.lookup.node_ids.contains(&tools) { Some(tools) } else { None };
                 let sub = e.sub.as_ref().map(|s| format!("sub:{}:{}", e.conv, s)).filter(|s| self.lookup.node_ids.contains(s));
                 let mut path: Vec<String> = match e.kind {
                     "prompt" => vec!["brain".into(), proj, conv],
-                    "tool" => match &sub { Some(s) => vec![conv, s.clone()], None => [Some(proj), Some(conv), tools].into_iter().flatten().collect() },
+                    "tool" => match &sub { Some(s) => vec![conv, s.clone()], None => [Some(conv), Some(proj), tools].into_iter().flatten().collect() },
                     "subagent" => [Some(conv), sub.clone()].into_iter().flatten().collect(),
                     "skill" => {
                         let target = self.lookup.skill_by_name.get(&e.name).cloned();
-                        let mid = sub.clone().or(tools);
+                        let mid = sub.clone().or(Some(proj));
                         [Some(conv), mid, target].into_iter().flatten().collect()
                     }
                     "touch" => match self.touched_node(&self.lookup, &e.name) {
@@ -457,7 +489,7 @@ impl Brain {
                     _ => vec![conv],
                 };
                 path.retain(|p| !p.is_empty());
-                Some(json!({ "seq": e.seq, "ts": e.ts, "kind": e.kind, "name": util::clip(&e.name, 80), "path": path }))
+                Some(json!({ "seq": e.seq, "ts": e.ts, "kind": e.kind, "name": util::clip(&e.name, 80), "detail": e.detail, "path": path }))
             }).collect()
         };
         json!({
@@ -493,6 +525,24 @@ impl Brain {
             self.skill_json(id, rest)?
         } else if let Some(key) = id.strip_prefix("conv:") {
             self.conv_json(self.ingest.convs.get(key)?)
+        } else if let Some(pid) = id.strip_prefix("tools:").filter(|k| k.starts_with("proj:")) {
+            let convs = self.project_convs(pid);
+            if convs.is_empty() { return None; }
+            let mut counts: BTreeMap<String, u32> = BTreeMap::new();
+            for c in &convs { for (k, v) in &c.tool_counts { *counts.entry(k.clone()).or_insert(0) += v; } }
+            let mut calls: Vec<Value> = convs.iter().flat_map(|c| c.recent.iter().map(move |x| {
+                let mut v = json!(x);
+                v["conversation"] = json!(conv_label(c));
+                v
+            })).collect();
+            calls.sort_by(|a, b| b["ts"].as_i64().cmp(&a["ts"].as_i64()));
+            calls.truncate(60);
+            json!({
+                "kind": "tools", "title": format!("Tools · {}", self.project_label(pid)),
+                "meta": { "Total calls": counts.values().sum::<u32>(), "Distinct tools": counts.len(), "Sessions": convs.len() },
+                "tool_counts": sorted_counts(&counts),
+                "calls": calls,
+            })
         } else if let Some(key) = id.strip_prefix("tools:") {
             let c = self.ingest.convs.get(key)?;
             json!({
@@ -504,11 +554,7 @@ impl Brain {
         } else if let Some(rest) = id.strip_prefix("sub:") {
             self.sub_json(rest)?
         } else if id.starts_with("proj:") {
-            let convs: Vec<Value> = self.lookup.conv_project.iter().filter(|(_, p)| p.as_str() == id)
-                .filter_map(|(k, _)| self.ingest.convs.get(k))
-                .map(|c| json!({ "id": format!("conv:{}", c.key), "title": conv_label(c), "harness": c.harness, "last": util::iso(c.last), "calls": c.total_calls() }))
-                .collect();
-            json!({ "kind": "project", "title": id.trim_start_matches("proj:"), "meta": { "Path": id.trim_start_matches("proj:"), "Conversations": convs.len() }, "conversations": convs })
+            self.project_json(id)?
         } else if let Some(t) = id.strip_prefix("ghost:") {
             let from: Vec<Value> = self.notes.iter()
                 .filter(|n| n.links.iter().any(|l| l.to_lowercase() == t))
@@ -578,7 +624,90 @@ impl Brain {
         }))
     }
 
+    fn project_convs(&self, pid: &str) -> Vec<&Conv> {
+        self.lookup.conv_project.iter().filter(|(_, p)| p.as_str() == pid)
+            .filter_map(|(k, _)| self.ingest.convs.get(k)).collect()
+    }
+
+    fn project_label(&self, pid: &str) -> String {
+        self.lookup.index.get(pid).map(|&i| self.lookup.nodes[i].1.clone())
+            .unwrap_or_else(|| pid.trim_start_matches("proj:").to_string())
+    }
+
+    /// The project digest: sessions ranked by weight, plus what the project
+    /// as a whole used and changed. The first thing an agent should read.
+    fn project_json(&self, pid: &str) -> Option<Value> {
+        let now = util::now_ms();
+        let mut convs: Vec<(&Conv, f32, f32)> = self.project_convs(pid).into_iter()
+            .map(|c| { let (s, r) = conv_score(c, now); (c, s, r) }).collect();
+        if convs.is_empty() && !self.lookup.node_ids.contains(pid) { return None; }
+        convs.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+        let mut tools: BTreeMap<String, u32> = BTreeMap::new();
+        let mut skills: BTreeMap<String, u32> = BTreeMap::new();
+        let mut changed: BTreeMap<String, u32> = BTreeMap::new();
+        let (mut prompts, mut calls, mut edits, mut weight) = (0u32, 0u32, 0u32, 0f32);
+        let (mut first, mut last) = (i64::MAX, 0i64);
+        for (c, s, _) in &convs {
+            for (k, v) in &c.tool_counts { *tools.entry(k.clone()).or_insert(0) += v; }
+            for (k, v) in &c.skills { *skills.entry(k.clone()).or_insert(0) += v; }
+            project_files(&c.changed, pid, &mut changed);
+            prompts += c.prompts; calls += c.total_calls(); edits += c.edits; weight += s;
+            if c.started > 0 { first = first.min(c.started); }
+            last = last.max(c.last);
+        }
+        let mut files = sorted_counts(&changed);
+        files.truncate(30);
+        let sessions: Vec<Value> = convs.iter().map(|(c, s, r)| json!({
+            "id": format!("conv:{}", c.key), "title": conv_label(c), "harness": c.harness,
+            "last": util::iso(c.last), "weight": round1(*s), "recency": round2(*r),
+            "prompts": c.prompts, "calls": c.total_calls(), "edits": c.edits, "files_changed": c.changed.len(),
+            "live": self.ingest.live_files.get(&c.key).map_or(false, |m| now - m < LIVE_WINDOW_MS),
+            "summary": util::clip(&c.first_prompt, 160),
+            "outcome": util::clip(&c.last_reply, 200),
+        })).collect();
+        let path = convs.first().map(|(c, _, _)| project_root(&c.cwd)).unwrap_or_else(|| pid.trim_start_matches("proj:").to_string());
+        Some(json!({
+            "kind": "project", "title": self.project_label(pid),
+            "meta": {
+                "Path": path, "Sessions": convs.len(),
+                "First seen": if first < i64::MAX { util::iso(first) } else { String::new() },
+                "Last active": if last > 0 { util::iso(last) } else { String::new() },
+                "Prompts": prompts, "Tool calls": calls, "Edits": edits, "Weight": round1(weight),
+            },
+            "conversations": sessions,
+            "tool_counts": sorted_counts(&tools),
+            "skills": sorted_counts(&skills),
+            "files_changed": files,
+        }))
+    }
+
+    /// Resolve a project from a node id, a path (cwd anywhere inside it,
+    /// worktrees included) or a name.
+    pub fn find_project(&self, q: &str) -> Option<String> {
+        let q = q.trim();
+        if q.is_empty() { return None; }
+        let projects: Vec<(&String, &String)> = self.lookup.nodes.iter()
+            .filter(|(_, _, k)| *k == "project").map(|(id, l, _)| (id, l)).collect();
+        if q.starts_with("proj:") { return projects.iter().find(|(id, _)| id.as_str() == q).map(|(id, _)| id.to_string()); }
+        let (as_path, _) = project_of(q);
+        if let Some((id, _)) = projects.iter().find(|(id, _)| **id == as_path) { return Some(id.to_string()); }
+        let norm = as_path.trim_start_matches("proj:").to_string();
+        if norm.contains('/') {
+            if let Some((id, _)) = projects.iter()
+                .filter(|(id, _)| { let p = id.trim_start_matches("proj:"); norm.starts_with(&format!("{}/", p)) })
+                .max_by_key(|(id, _)| id.len()) { return Some(id.to_string()); }
+        }
+        let lq = q.to_lowercase();
+        projects.iter().find(|(_, l)| l.to_lowercase() == lq)
+            .or_else(|| projects.iter().find(|(_, l)| l.to_lowercase().contains(&lq)))
+            .map(|(id, _)| id.to_string())
+    }
+
     fn conv_json(&self, c: &Conv) -> Value {
+        let mut rel = BTreeMap::new();
+        project_files(&c.changed, &project_of(&c.cwd).0, &mut rel);
+        let mut files = sorted_counts(&rel);
+        files.truncate(40);
         let subs: Vec<Value> = c.subs.iter().map(|s| json!({
             "id": format!("sub:{}:{}", c.key, s.key), "type": s.agent_type, "description": s.description, "calls": s.calls,
         })).collect();
@@ -591,10 +720,15 @@ impl Brain {
                 "Agent": c.harness, "Session id": c.session_id, "Project": c.cwd, "Model": c.model, "Branch": c.branch,
                 "Started": if c.started > 0 { util::iso(c.started) } else { String::new() },
                 "Last activity": if c.last > 0 { util::iso(c.last) } else { String::new() },
-                "Prompts": c.prompts, "Assistant turns": c.turns, "Tool calls": c.total_calls(),
+                "Prompts": c.prompts, "Assistant turns": c.turns, "Tool calls": c.total_calls(), "Edits": c.edits,
+                "Weight": round1(conv_score(c, util::now_ms()).0),
                 "Transcript": util::display_path(&c.file),
             },
             "first_prompt": c.first_prompt,
+            "prompts_timeline": c.prompt_log.iter().map(|p| json!({ "ts": p.ts, "text": p.text })).collect::<Vec<_>>(),
+            "prompts_skipped": c.prompts_skipped,
+            "last_reply": c.last_reply,
+            "files_changed": files,
             "tool_counts": sorted_counts(&c.tool_counts),
             "skills": sorted_counts(&c.skills),
             "subagents": subs,
@@ -700,18 +834,22 @@ impl Brain {
             let id = format!("conv:{}", c.key);
             if seen.contains(&id) || !kind_ok("conversation") || !self.lookup.node_ids.contains(&id) { continue; }
             let mut hay = c.first_prompt.to_lowercase();
+            for p in &c.prompt_log { hay.push(' '); hay.push_str(&p.text.to_lowercase()); }
+            for f in c.changed.keys() { hay.push(' '); hay.push_str(f); }
             for call in &c.recent { hay.push(' '); hay.push_str(&call.args.to_lowercase()); }
             if terms.iter().all(|t| hay.contains(t)) {
                 seen.insert(id.clone());
-                hits.push((15, json!({ "id": id, "label": conv_label(c), "kind": "conversation", "match": "activity", "snippet": util::clip(&c.first_prompt, 200) })));
+                // Heavier (recent, busy) sessions first among activity matches.
+                let w = conv_score(c, util::now_ms()).0;
+                hits.push((10 + (w.round() as i32).min(9), json!({ "id": id, "label": conv_label(c), "kind": "conversation", "match": "activity", "snippet": util::clip(&c.first_prompt, 200) })));
             }
         }
         hits.sort_by(|a, b| b.0.cmp(&a.0));
         hits.into_iter().take(limit.max(1)).map(|(_, v)| v).collect()
     }
 
-    /// Conversations, most recently active first.
-    pub fn recent(&self, limit: usize, q: Option<&str>) -> Vec<Value> {
+    /// Conversations, newest first — or heaviest first with `sort = "weight"`.
+    pub fn recent(&self, limit: usize, q: Option<&str>, sort: Option<&str>) -> Vec<Value> {
         let q = q.unwrap_or("").to_lowercase();
         let now = util::now_ms();
         let mut convs: Vec<&Conv> = self.ingest.convs.values()
@@ -719,6 +857,9 @@ impl Brain {
             .filter(|c| q.is_empty() || conv_label(c).to_lowercase().contains(&q) || c.cwd.to_lowercase().contains(&q) || c.first_prompt.to_lowercase().contains(&q))
             .collect();
         convs.sort_by(|a, b| b.last.cmp(&a.last));
+        if matches!(sort, Some("weight") | Some("important")) {
+            convs.sort_by(|a, b| conv_score(b, now).0.partial_cmp(&conv_score(a, now).0).unwrap_or(std::cmp::Ordering::Equal));
+        }
         convs.into_iter().take(limit.max(1)).map(|c| {
             let mut skills: Vec<(&String, &u32)> = c.skills.iter().collect();
             skills.sort_by(|a, b| b.1.cmp(a.1));
@@ -731,6 +872,9 @@ impl Brain {
                 "live": self.ingest.live_files.get(&c.key).map_or(false, |m| now - m < LIVE_WINDOW_MS),
                 "tool_calls": c.total_calls(),
                 "prompts": c.prompts,
+                "edits": c.edits,
+                "weight": round1(conv_score(c, now).0),
+                "summary": util::clip(&c.first_prompt, 140),
                 "skills": skills.iter().take(5).map(|(k, _)| k.as_str()).collect::<Vec<_>>(),
                 "subagents": c.subs.len(),
             })
@@ -772,6 +916,52 @@ fn snippet(text: &str, byte_pos: usize) -> String {
     let start = text[..byte_pos.min(text.len())].char_indices().rev().nth(80).map(|(i, _)| i).unwrap_or(0);
     let s: String = text[start..].chars().take(220).collect();
     util::one_line(&s, 220)
+}
+
+/// How recent: 1 now, 0.5 after HALF_LIFE_DAYS, toward 0 after that.
+fn recency(last: i64, now: i64) -> f32 {
+    if last <= 0 { return 0.0; }
+    let days = (now - last).max(0) as f32 / 86_400_000.0;
+    0.5f32.powf(days / HALF_LIFE_DAYS)
+}
+
+/// (weight, recency) of a session: log of how much happened in it, scaled
+/// by recency. A big session from months ago keeps a quarter of its weight.
+pub fn conv_score(c: &Conv, now: i64) -> (f32, f32) {
+    let activity = 1.0 + c.prompts as f32 * 2.0 + c.turns as f32 * 0.5 + c.total_calls() as f32 * 0.3
+        + c.edits as f32 * 1.5 + c.subs.len() as f32 * 3.0;
+    let r = recency(c.last, now);
+    (activity.ln() * (0.25 + 0.75 * r), r)
+}
+
+// Through f64 so JSON shows 9.3, not 9.300000190734863.
+fn round1(x: f32) -> f64 { (x as f64 * 10.0).round() / 10.0 }
+fn round2(x: f32) -> f64 { (x as f64 * 100.0).round() / 100.0 }
+
+/// Changed files relative to their project, worktree folder stripped, so the
+/// same file edited from several worktrees counts as one.
+fn project_files(changed: &BTreeMap<String, u32>, pid: &str, into: &mut BTreeMap<String, u32>) {
+    let root = format!("{}/", pid.trim_start_matches("proj:"));
+    for (path, n) in changed {
+        let mut rel = path.strip_prefix(&root).unwrap_or(path).to_string();
+        for marker in [".claude/worktrees/", ".codex/worktrees/", "worktrees/"] {
+            if let Some(rest) = rel.strip_prefix(marker) {
+                rel = rest.split_once('/').map(|(_, r)| r.to_string()).unwrap_or_default();
+                break;
+            }
+        }
+        if !rel.is_empty() { *into.entry(rel).or_insert(0) += n; }
+    }
+}
+
+/// The repo folder a cwd belongs to, original casing kept.
+fn project_root(cwd: &str) -> String {
+    let s = cwd.replace('\\', "/");
+    let lower = s.to_lowercase();
+    for marker in ["/.claude/worktrees/", "/.codex/worktrees/", "/worktrees/"] {
+        if let Some(i) = lower.find(marker) { return s[..i].to_string(); }
+    }
+    s.trim_end_matches('/').to_string()
 }
 
 fn sorted_counts(m: &std::collections::BTreeMap<String, u32>) -> Vec<(String, u32)> {
@@ -818,5 +1008,35 @@ mod tests {
         assert_eq!(la, ".skills");
         let (_, l) = project_of(r"C:\GameForgerAI-Editor");
         assert_eq!(l, "GameForgerAI-Editor");
+        assert_eq!(project_root(r"C:\.skills\.claude\worktrees\brain-x"), "C:/.skills");
+    }
+
+    #[test]
+    fn changed_files_merge_across_worktrees() {
+        let mut changed = BTreeMap::new();
+        changed.insert("c:/.skills/.claude/worktrees/a/src/x.rs".to_string(), 2);
+        changed.insert("c:/.skills/src/x.rs".to_string(), 1);
+        changed.insert("c:/other/y.rs".to_string(), 1);
+        let mut out = BTreeMap::new();
+        project_files(&changed, "proj:c:/.skills", &mut out);
+        assert_eq!(out.get("src/x.rs"), Some(&3));
+        assert_eq!(out.get("c:/other/y.rs"), Some(&1));
+    }
+
+    #[test]
+    fn weight_decays_with_age() {
+        let now = 1_000 * 86_400_000;
+        let mut c = Conv::default();
+        c.prompts = 10;
+        c.last = now;
+        let (fresh, r) = conv_score(&c, now);
+        assert!((r - 1.0).abs() < 1e-6);
+        c.last = now - 14 * 86_400_000;
+        let (two_weeks, r) = conv_score(&c, now);
+        assert!((r - 0.5).abs() < 1e-3);
+        c.last = now - 365 * 86_400_000;
+        let (old, _) = conv_score(&c, now);
+        assert!(fresh > two_weeks && two_weeks > old && old > 0.0);
+        assert!((old / fresh - 0.25).abs() < 0.01);
     }
 }

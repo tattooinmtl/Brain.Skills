@@ -25,19 +25,23 @@ The `global-brain` MCP server exposes the brain's index:
 
 | Tool | Use it to |
 |---|---|
+| `brain_project` | **start here**: the current project's sessions ranked by weight (activity × recency) with summaries, plus its skills, tools and most-changed files |
+| `brain_node` | read one node: a session's digest (prompt timeline, files changed, last reply, tools, skills, sub-agents), a note's text, a skill's usage history |
 | `brain_search` | find prior conversations, notes, skills or projects about a topic |
-| `brain_recent` | see the latest conversations across all agents (filter by project) |
-| `brain_node` | read one node: a conversation's tools/skills/sub-agents/calls, a note's text, a skill's usage history |
+| `brain_recent` | latest (or `sort: weight` heaviest) conversations across all agents and projects |
 | `brain_status` | counts, vault location, pending verification proposals |
 | `brain_add_entry` | append a dated lesson/decision to any node's log |
 | `brain_save_note` | create a new vault note (00-Inbox, or 30-Logs for a session log) |
 
 ## When to use it
 
-- **Before starting** substantial work on a project: `brain_search` for the project
-  or feature name, and `brain_recent` with `filter` set to the project folder.
-  Read the most relevant hits with `brain_node` and reuse what was learned —
-  don't redo an audit or re-decide something already settled.
+- **Before starting** substantial work on a project: `brain_project` (no
+  arguments = your working folder), then `brain_node` on the one or two
+  sessions that matter. Use `brain_search` for a feature or topic. Reuse what
+  was learned — don't redo an audit or re-decide something already settled.
+- **Digests first, transcripts last.** A session digest is a few hundred
+  tokens; its transcript can be megabytes. Open the transcript file only when
+  the digest doesn't answer the question.
 - **When the user mentions earlier work** ("the audit from yesterday", "like we
   did in GameForger"): search before asking them to repeat it.
 - **After finishing** something worth remembering: `brain_add_entry` on the

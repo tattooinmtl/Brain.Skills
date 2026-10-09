@@ -50,10 +50,34 @@
         <button class="btn" id="btn-fly" title="First-person flight (F)">Fly (F)</button>
         <button class="btn" id="btn-reheat" title="Re-run the layout">Re-layout</button>
       </div>
-      <div class="hud-row toggles">
-        <label><input type="checkbox" id="tg-labels" checked> Labels</label>
-        <label><input type="checkbox" id="tg-bloom" checked> Glow</label>
-        <label><input type="checkbox" id="tg-orbit" checked> Idle orbit</label>
+      <div class="hud-row">
+        <button class="btn follow-btn" id="btn-follow" title="Camera follows live activity (L)"><span class="rec"></span>Follow live</button>
+        <button class="btn" id="btn-follow-cfg" title="Follow settings" aria-expanded="false">⚙</button>
+        <button class="btn" id="btn-layers" title="Show or hide layers" aria-expanded="false">Layers ▾</button>
+      </div>
+      <div class="hud-menu" id="menu-follow" hidden>
+        <div class="menu-title">Follow live</div>
+        <label><input type="checkbox" data-set="followHideOthers"> Hide other nodes</label>
+        <label><input type="checkbox" data-set="followHideNames"> Hide names</label>
+        <label class="sel">Camera <select data-set="followDist">
+          <option value="100">Close</option><option value="180">Medium</option><option value="360">Far</option>
+        </select></label>
+        <label class="sel">Pace <select data-set="followPace">
+          <option value="slow">Slow</option><option value="normal">Normal</option><option value="fast">Fast</option>
+        </select></label>
+        <div class="muted menu-note">Only active while Follow live is on. Hiding nodes and names saves frame rate.</div>
+      </div>
+      <div class="hud-menu" id="menu-layers" hidden>
+        <div class="menu-title">Layers <span class="muted" id="fps"></span></div>
+        <label><input type="checkbox" data-set="labels"> Names</label>
+        <label><input type="checkbox" data-set="glow"> Glow</label>
+        <label><input type="checkbox" data-set="edges"> Links</label>
+        <label><input type="checkbox" data-set="sparks"> Activity sparks</label>
+        <label><input type="checkbox" data-set="stars"> Starfield</label>
+        <label><input type="checkbox" data-set="orbit"> Idle orbit</label>
+        <label><input type="checkbox" data-set="bouncy"> Bouncing nodes <span class="muted">(drag a node, let go)</span></label>
+        <label class="sel">Spread <input type="range" min="0.5" max="2" step="0.1" data-set="spread"></label>
+        <div class="muted menu-note">Nodes repel like charges, links pull like springs; the shape is where they balance. Bouncing keeps the physics running (costs some CPU).</div>
       </div>
     </div>
 

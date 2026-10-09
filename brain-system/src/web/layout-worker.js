@@ -2,6 +2,12 @@
 // Messages in : {type:'init', n, links:Uint32Array(2m), linkKinds:Uint8Array(m),
 //                weights:Float32Array(n), pos:Float32Array(3n), pinned:Int32Array, alpha}
 //               {type:'reheat', alpha} | {type:'pause'} | {type:'resume'}
+//               {type:'physics', bouncy, spread}   bouncy = springy + always settling
+//               {type:'drag', i, pos:[x,y,z]} | {type:'release', i}
+// The model: every node carries a repelling charge (heavier nodes push
+// harder), every link is a spring, and a weak gravity holds the whole brain
+// together. The shape is wherever those forces balance; drag a node away and
+// the springs pull it back while its neighbours make room.
 // Messages out: {type:'tick', pos:Float32Array(3n), alpha}
 'use strict';
 
@@ -9,7 +15,10 @@ let n = 0, m = 0;
 let pos, vel, links, linkKinds, weights, charge, bias, dist, strength, pinned;
 let alpha = 1, alphaMin = 0.004, alphaTarget = 0;
 const alphaDecay = 1 - Math.pow(0.001, 1 / 320);
-const velocityDecay = 0.62;
+let velocityDecay = 0.62;
+let bouncy = false, spread = 1, dragging = -1, brainPinned = [];
+// Bouncy keeps a little energy in the system so it never quite freezes.
+const restTarget = () => (bouncy ? 0.012 : 0);
 const THETA2 = 0.81; // theta = 0.9
 let running = false, paused = false, timer = null;
 
@@ -23,12 +32,14 @@ self.onmessage = (e) => {
     n = d.n; m = d.links.length / 2;
     pos = d.pos; links = d.links; linkKinds = d.linkKinds; weights = d.weights;
     pinned = new Uint8Array(n);
+    brainPinned = d.pinned;
     for (const i of d.pinned) pinned[i] = 1;
+    dragging = -1;
     vel = new Float32Array(n * 3);
     const deg = new Float32Array(n);
     for (let l = 0; l < m; l++) { deg[links[2 * l]]++; deg[links[2 * l + 1]]++; }
     charge = new Float32Array(n);
-    for (let i = 0; i < n; i++) charge[i] = -(9 + weights[i] * 5);
+    setCharges();
     bias = new Float32Array(m); dist = new Float32Array(m); strength = new Float32Array(m);
     for (let l = 0; l < m; l++) {
       const s = links[2 * l], t = links[2 * l + 1];
@@ -38,6 +49,27 @@ self.onmessage = (e) => {
       strength[l] = (KIND_STRENGTH[k] || 0.5) / Math.min(deg[s], deg[t]);
     }
     alpha = d.alpha;
+    alphaTarget = restTarget();
+    start();
+  } else if (d.type === 'physics') {
+    bouncy = !!d.bouncy;
+    velocityDecay = bouncy ? 0.84 : 0.62;
+    if (d.spread && d.spread !== spread) { spread = d.spread; if (n) { setCharges(); alpha = Math.max(alpha, 0.35); } }
+    alphaTarget = dragging >= 0 ? 0.3 : restTarget();
+    start();
+  } else if (d.type === 'drag') {
+    if (!n || d.i < 0 || d.i >= n) return;
+    dragging = d.i;
+    pinned[d.i] = 1;
+    const k = d.i * 3;
+    pos[k] = d.pos[0]; pos[k + 1] = d.pos[1]; pos[k + 2] = d.pos[2];
+    vel[k] = vel[k + 1] = vel[k + 2] = 0;
+    alphaTarget = 0.3; alpha = Math.max(alpha, 0.3);
+    start();
+  } else if (d.type === 'release') {
+    if (d.i >= 0 && d.i < n && !brainPinned.includes(d.i)) pinned[d.i] = 0;
+    dragging = -1;
+    alphaTarget = restTarget(); alpha = Math.max(alpha, 0.5);
     start();
   } else if (d.type === 'reheat') {
     alpha = Math.max(alpha, d.alpha); start();
@@ -47,6 +79,10 @@ self.onmessage = (e) => {
     paused = false; start();
   }
 };
+
+function setCharges() {
+  for (let i = 0; i < n; i++) charge[i] = -(9 + weights[i] * 5) * spread;
+}
 
 function start() {
   if (running || paused || !n) return;
@@ -61,7 +97,7 @@ function loop() {
   do { tick(); } while (performance.now() - t0 < 12 && alpha > alphaMin);
   const out = new Float32Array(pos);
   self.postMessage({ type: 'tick', pos: out, alpha }, [out.buffer]);
-  if (alpha <= alphaMin) { running = false; return; }
+  if (alpha <= alphaMin && alphaTarget <= alphaMin) { running = false; return; }
   timer = setTimeout(loop, 16);
 }
 

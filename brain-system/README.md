@@ -16,24 +16,45 @@ brain-system.exe --install-startup / --uninstall-startup
 |---|---|---|
 | white core | **Global Brain** | the root |
 | orange | **Project** | a working directory (worktrees fold into their repo) |
-| blue | **Conversation** | one agent transcript |
-| green | **Tools** | one node per conversation, aggregating every tool call |
+| blue | **Conversation** | one agent session, under its project; brightness = recency |
+| green | **Tools** | one node per project, aggregating every tool call of its sessions |
 | purple | **Sub-agent** | each sub-agent a conversation spawned |
-| yellow | **Skill** | one node per skill, shared by every conversation that used it |
+| yellow | **Skill** | one node per skill, linked to every project that used it |
 | white | **Session** | `30-Logs/session-*` notes in the vault |
 | teal / pink / slate | **Note** | entity / concept / other vault notes, linked by `[[wikilinks]]` |
 | grey | **Unresolved link** | a `[[link]]` with no note yet (hidden by default) |
 
 Nodes pulse and light travels along the edges as agents work: a new prompt
-lights `brain → project → conversation`, a tool call lights `conversation → tools`,
-a skill use continues on to the skill, and a file edit lights the vault note it
-touched. Conversations whose transcript changed in the last two minutes keep
+lights `brain → project → conversation`, a tool call lights
+`conversation → project → tools`, a skill use lights `conversation → project → skill`,
+and a file edit lights the vault note it touched.
+
+### Weights
+
+Every session has a weight: `ln(1 + 2·prompts + 0.5·turns + 0.3·calls +
+1.5·edits + 3·sub-agents) × (0.25 + 0.75·recency)`, where recency halves every
+14 days. A huge session from months ago keeps a quarter of its weight; a busy
+one from today counts in full. Projects sum their sessions. Weight sets node
+size; recency sets brightness, so old sessions fade into the background. Conversations whose transcript changed in the last two minutes keep
 breathing.
 
 Controls: drag to rotate, right-drag to pan, wheel zooms toward the cursor,
 click a node to open its panel, double-click to fly to it, **F** for free
 flight (WASD, Space/C up and down, Shift boost, wheel sets speed, Esc exits),
 **/** to search. The legend toggles each category.
+
+**Follow live** (button or **L**, **Esc** stops): while it is on, the camera
+glides along each new event's path (session, project, tools or skill) and a
+small card says what happened: Reading, Writing, Editing, Running, Searching,
+Browsing, a skill, a sub-agent, a prompt, with the file, command or query.
+Its settings (gear): hide other nodes, hide names, camera distance and pace.
+It never moves the camera while it is off.
+
+**Layers** turns parts of the view on or off to save frame rate: names, glow,
+links, activity sparks, starfield, idle orbit, and **Bouncing nodes**. With
+bouncing on you can grab a node, pull it away and let go: links act as springs
+and every node repels like a charge, so it springs back to where the forces
+balance. **Spread** scales that repulsion. Settings are remembered per browser.
 
 The side panel's **Edit** lets you rename a node, give it a colour and a note
 (stored in `<vault>/_system/brain-graph/overlay.json`), edit the underlying
@@ -43,7 +64,12 @@ log. File saves are refused if the file changed on disk since you opened it.
 ## Where the data comes from
 
 The indexer polls every 1.5 s and reads only what was appended since the last
-poll.
+poll, in 4 MB chunks (memory stays flat however large a transcript is). The
+index itself (read offsets plus a digest per session: prompt timeline, files
+changed, last reply, tool and skill counts) is saved to
+`~/.brain-skills/cache/sessions-index.json` (about 2 MB for ~90 sessions), so a
+restart reads only what was appended while it was off. Deleting the file just
+costs one full re-read.
 
 * **Claude Code**: `~/.claude/projects/<project>/<session>.jsonl` and
   `<session>/subagents/agent-*.jsonl`
@@ -69,9 +95,14 @@ talks to the running brain and starts it if needed. Tools:
 
 | Tool | Does |
 |---|---|
-| `brain_search` | search conversations, notes, skills, projects (names, note text, skill descriptions, what sessions did) |
-| `brain_recent` | latest conversations across all agents, live ones flagged |
-| `brain_node` | read a node: details, connections, tool/skill usage, recent calls, file content, entry log |
+| `brain_project` | **start here**: a project's sessions ranked by weight with summaries and outcomes, plus its skills, tools and most-changed files. Defaults to the agent's working folder |
+| `brain_node` | read a node: a session's digest (prompt timeline, files changed, last reply), tool/skill usage, recent calls, file content, entry log |
+| `brain_search` | search conversations, notes, skills, projects (names, note text, skill descriptions, session prompts and changed files) |
+| `brain_recent` | latest (or `sort: weight` heaviest) conversations across all agents, live ones flagged |
+
+Agents read the project digest, then one or two session digests, and open a
+raw transcript only if that isn't enough. A session digest is a few KB; its
+transcript can be many MB.
 | `brain_status` | counts, paths, pending verification proposals |
 | `brain_add_entry` | append a dated entry to any node (source `claude`) |
 | `brain_save_note` | create a new note in `00-Inbox` or `30-Logs` (never overwrites) |
@@ -118,6 +149,7 @@ The server binds to 127.0.0.1 only and:
 | Env var | Default |
 |---|---|
 | `BRAIN_PORT` | `6789` |
+| `BRAIN_CACHE_DIR` | `~/.brain-skills/cache` |
 | `BRAIN_VAULT_DIR` | `<repo>/memory` |
 | `BRAIN_SKILLS_DIR` | `<repo>/skills` |
 | `BRAIN_CLAUDE_PROJECTS` | `~/.claude/projects` |
