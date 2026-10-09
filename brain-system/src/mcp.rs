@@ -12,11 +12,12 @@ use crate::{config, util};
 
 const PROTOCOL_VERSIONS: &[&str] = &["2025-06-18", "2025-03-26", "2024-11-05"];
 
-const INSTRUCTIONS: &str = "The Global Brain indexes every past agent conversation (Claude Code, Codex, MiniMax…), \
-the tools and skills each one used, its sub-agents, the files it touched, the Obsidian memory vault and the skills library. \
-Use brain_search before starting non-trivial work to find prior sessions, notes and skills on the same topic; \
-brain_node to read one; brain_recent to see what happened lately. When you finish meaningful work, record what you \
-learned with brain_add_entry (on an existing node) or brain_save_note (a new note in the vault Inbox).";
+const INSTRUCTIONS: &str = "The Global Brain indexes every past agent conversation (Claude Code, Codex, MiniMax…) \
+by project: each session has a digest (its prompts, files it changed, its last reply), tools and skills used, \
+sub-agents, plus the Obsidian memory vault and the skills library. Sessions are weighted by how much happened and how recent. \
+Start with brain_project (defaults to your working folder) to see the project's weighted sessions; brain_node on a \
+session id for its digest; brain_search for a topic across everything. Open a raw transcript only if a digest is not enough. \
+When you finish meaningful work, record what you learned with brain_add_entry or brain_save_note.";
 
 pub fn run() {
     let stdin = std::io::stdin();
@@ -77,8 +78,17 @@ fn tools() -> Value {
             "annotations": { "readOnlyHint": true }
         },
         {
+            "name": "brain_project",
+            "description": "Start here. A project's digest: its sessions (all agents) ranked by weight (activity × recency) with one-line summaries and outcomes, plus the skills, tools and files the project used. Defaults to the current working folder. Much cheaper than reading transcripts.",
+            "inputSchema": { "type": "object", "properties": {
+                "project": { "type": "string", "description": "Folder path, project name or proj: id. Omit for the current working folder." },
+                "limit": { "type": "integer", "minimum": 1, "maximum": 60, "default": 15, "description": "Sessions to list" }
+            } },
+            "annotations": { "readOnlyHint": true }
+        },
+        {
             "name": "brain_node",
-            "description": "Read one brain node by id (from brain_search or brain_recent): its details, connections, tool-call breakdown and recent calls for conversations, usage history for skills, file content for notes/skills, and its entry log.",
+            "description": "Read one brain node by id (from brain_project, brain_search or brain_recent). For a conversation: its digest (prompt timeline, files changed, last reply), tools, skills, sub-agents and recent calls. For a skill: usage history. For notes/skills: file content. Plus connections and the entry log.",
             "inputSchema": { "type": "object", "properties": {
                 "id": { "type": "string", "description": "Node id, e.g. conv:claude:<uuid>, skill:pdf, note:10-Entities/X.md" },
                 "max_chars": { "type": "integer", "default": 12000, "description": "Truncate file content to this many characters" }
@@ -87,9 +97,10 @@ fn tools() -> Value {
         },
         {
             "name": "brain_recent",
-            "description": "List the most recently active agent conversations (all agents), newest first, with project, tool-call count, skills used and whether they are live right now.",
+            "description": "List agent conversations (all agents and projects), newest first or heaviest first, with project, weight, summary, tool calls, skills and whether they are live right now.",
             "inputSchema": { "type": "object", "properties": {
                 "limit": { "type": "integer", "minimum": 1, "maximum": 50, "default": 10 },
+                "sort": { "type": "string", "enum": ["recent", "weight"], "default": "recent", "description": "weight = most important (activity × recency) first" },
                 "filter": { "type": "string", "description": "Only conversations whose title, project path or first prompt contains this" }
             } },
             "annotations": { "readOnlyHint": true }
@@ -127,6 +138,7 @@ fn call(params: &Value) -> Value {
     let args = &params["arguments"];
     let result = match name {
         "brain_search" => search(args),
+        "brain_project" => project(args),
         "brain_node" => node(args),
         "brain_recent" => recent(args),
         "brain_status" => status(),
@@ -186,6 +198,19 @@ fn node(a: &Value) -> Result<String, String> {
         if let Some(s) = d[key].as_str().filter(|s| !s.is_empty()) { o.push_str(&format!("\n{}:\n{}\n", key.replace('_', " "), s)); }
     }
     if let Some(e) = d["edit"]["note"].as_str().filter(|s| !s.is_empty()) { o.push_str(&format!("\nuser note:\n{}\n", e)); }
+    if let Some(ps) = d["prompts_timeline"].as_array().filter(|a| !a.is_empty()) {
+        o.push_str("\nwhat the user asked (in order):\n");
+        let skipped = d["prompts_skipped"].as_u64().unwrap_or(0);
+        for (i, p) in ps.iter().enumerate() {
+            if i == 4 && skipped > 0 { o.push_str(&format!("  … {} more prompts …\n", skipped)); }
+            o.push_str(&format!("- {} {}\n", util::iso(p["ts"].as_i64().unwrap_or(0)).get(..16).unwrap_or(""), p["text"].as_str().unwrap_or("")));
+        }
+    }
+    if let Some(r) = d["last_reply"].as_str().filter(|s| !s.is_empty()) { o.push_str(&format!("\nlast reply:\n{}\n", r)); }
+    if let Some(f) = d["files_changed"].as_array().filter(|a| !a.is_empty()) {
+        o.push_str(&format!("\nfiles changed ({}):\n", f.len()));
+        for p in f.iter().take(30) { o.push_str(&format!("- {} ×{}\n", p[0].as_str().unwrap_or(""), p[1])); }
+    }
     let pairs = |v: &Value| -> String {
         v.as_array().map(|a| a.iter().filter_map(|p| Some(format!("{} ×{}", p[0].as_str()?, p[1])))
             .collect::<Vec<_>>().join(", ")).unwrap_or_default()
@@ -197,6 +222,10 @@ fn node(a: &Value) -> Result<String, String> {
     if let Some(subs) = d["subagents"].as_array().filter(|a| !a.is_empty()) {
         o.push_str("\nsub-agents:\n");
         for s in subs { o.push_str(&format!("- {} ({}) — {} calls — id: {}\n", s["description"].as_str().unwrap_or(""), s["type"].as_str().unwrap_or(""), s["calls"], s["id"].as_str().unwrap_or(""))); }
+    }
+    if let Some(cs) = d["conversations"].as_array().filter(|a| !a.is_empty()) {
+        o.push_str("\nsessions (heaviest first):\n");
+        o.push_str(&session_lines(cs, 25));
     }
     if let Some(u) = d["usage"].as_array().filter(|a| !a.is_empty()) {
         o.push_str("\nused in:\n");
@@ -229,6 +258,70 @@ fn node(a: &Value) -> Result<String, String> {
             if content.chars().count() > max { o.push_str(&format!("… truncated ({} chars total)\n", content.chars().count())); }
         }
     }
+    if d["kind"] == "conversation" {
+        o.push_str("\n(The raw transcript is listed above under Transcript; open it only if this digest is not enough.)\n");
+    }
+    Ok(o)
+}
+
+fn session_lines(cs: &[Value], limit: usize) -> String {
+    let mut o = String::new();
+    for c in cs.iter().take(limit) {
+        o.push_str(&format!(
+            "- {}[w {}] {} — {} ({}) · {} prompts · {} calls · {} edits\n    id: {}\n",
+            if c["live"].as_bool() == Some(true) { "● LIVE " } else { "" },
+            c["weight"], c["last"].as_str().unwrap_or("").get(..10).unwrap_or(""),
+            c["title"].as_str().unwrap_or(""), c["harness"].as_str().unwrap_or(""),
+            c["prompts"], c["calls"], c["edits"], c["id"].as_str().unwrap_or(""),
+        ));
+        let summary = c["summary"].as_str().unwrap_or("");
+        if !summary.is_empty() && summary != c["title"].as_str().unwrap_or("") { o.push_str(&format!("    asked: {}\n", summary)); }
+        if let Some(out) = c["outcome"].as_str().filter(|s| !s.is_empty()) { o.push_str(&format!("    ended: {}\n", out)); }
+    }
+    if cs.len() > limit { o.push_str(&format!("- … {} older/lighter sessions (raise limit)\n", cs.len() - limit)); }
+    o
+}
+
+fn project(a: &Value) -> Result<String, String> {
+    let q = match a["project"].as_str().map(str::trim).filter(|s| !s.is_empty()) {
+        Some(p) => p.to_string(),
+        None => std::env::current_dir().map(|p| p.to_string_lossy().to_string()).map_err(|e| e.to_string())?,
+    };
+    let limit = a["limit"].as_u64().unwrap_or(15).clamp(1, 60) as usize;
+    let d = api_get(&format!("/api/brain/project?q={}", enc(&q)))
+        .map_err(|e| format!("{} (looked for \"{}\")", e, q))?;
+    let mut o = format!("# Project {}\nid: {}\n", d["title"].as_str().unwrap_or(""), d["id"].as_str().unwrap_or(""));
+    if let Some(m) = d["meta"].as_object() {
+        let line: Vec<String> = m.iter().filter_map(|(k, v)| {
+            let v = match v { Value::String(s) => s.clone(), other => other.to_string() };
+            if v.is_empty() { None } else { Some(format!("{}: {}", k, v)) }
+        }).collect();
+        o.push_str(&line.join(" · "));
+        o.push('\n');
+    }
+    let pairs = |v: &Value, n: usize| -> String {
+        v.as_array().map(|a| a.iter().take(n).filter_map(|p| Some(format!("{} ×{}", p[0].as_str()?, p[1])))
+            .collect::<Vec<_>>().join(", ")).unwrap_or_default()
+    };
+    let sk = pairs(&d["skills"], 15);
+    if !sk.is_empty() { o.push_str(&format!("\nskills: {}\n", sk)); }
+    let tc = pairs(&d["tool_counts"], 12);
+    if !tc.is_empty() { o.push_str(&format!("tools: {}\n", tc)); }
+    if let Some(f) = d["files_changed"].as_array().filter(|a| !a.is_empty()) {
+        o.push_str("\nmost-changed files:\n");
+        for p in f.iter().take(15) { o.push_str(&format!("- {} ×{}\n", p[0].as_str().unwrap_or(""), p[1])); }
+    }
+    if let Some(cs) = d["conversations"].as_array().filter(|a| !a.is_empty()) {
+        o.push_str(&format!("\nsessions ({}), heaviest first:\n", cs.len()));
+        o.push_str(&session_lines(cs, limit));
+    }
+    if let Some(entries) = d["entries"].as_array().filter(|a| !a.is_empty()) {
+        o.push_str("\nproject log:\n");
+        for e in entries.iter().rev().take(10) {
+            o.push_str(&format!("- {} {}\n", util::iso(e["ts"].as_i64().unwrap_or(0)).get(..10).unwrap_or(""), e["text"].as_str().unwrap_or("")));
+        }
+    }
+    o.push_str("\nNext: brain_node <session id> for a session's digest. Read a transcript only if the digest is not enough.");
     Ok(o)
 }
 
@@ -236,14 +329,16 @@ fn recent(a: &Value) -> Result<String, String> {
     let limit = a["limit"].as_u64().unwrap_or(10).clamp(1, 50);
     let mut path = format!("/api/brain/recent?limit={}", limit);
     if let Some(f) = a["filter"].as_str().filter(|s| !s.is_empty()) { path.push_str(&format!("&q={}", enc(f))); }
+    if let Some(s) = a["sort"].as_str().filter(|s| !s.is_empty()) { path.push_str(&format!("&sort={}", enc(s))); }
     let list = api_get(&path)?.as_array().cloned().unwrap_or_default();
     if list.is_empty() { return Ok("No conversations found.".into()); }
-    let mut o = String::from("Recent conversations (newest first):\n");
+    let mut o = String::from(if a["sort"] == "weight" { "Conversations (heaviest first):\n" } else { "Recent conversations (newest first):\n" });
     for c in list {
         let skills = c["skills"].as_array().map(|a| a.iter().filter_map(|s| s.as_str()).collect::<Vec<_>>().join(", ")).unwrap_or_default();
         o.push_str(&format!(
-            "- {}{} [{}] {} · {} calls{}{}\n    project: {} · id: {}\n",
+            "- {}[w {}] {} [{}] {} · {} calls{}{}\n    project: {} · id: {}\n",
             if c["live"].as_bool() == Some(true) { "● LIVE " } else { "" },
+            c["weight"],
             c["title"].as_str().unwrap_or(""),
             c["agent"].as_str().unwrap_or(""),
             c["last"].as_str().unwrap_or(""),

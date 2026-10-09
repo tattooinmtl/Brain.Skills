@@ -7,6 +7,13 @@
 //!   * Claude Code  `~/.claude/projects/<proj>/<session>.jsonl` (+ `<session>/subagents/agent-*.jsonl`)
 //!   * Codex CLI    `~/.codex/sessions/**/rollout-*.jsonl`
 //!   * Any agent    `<vault>/_system/brain-events/*.jsonl` (format in README.md)
+//!
+//! Each conversation also keeps a small digest (prompt timeline, files it
+//! changed, its last reply) so agents can learn what a session did without
+//! opening the transcript. The whole index (offsets plus digests) is saved
+//! to `<cache>/sessions-index.json`, so a restart reads only new bytes.
+//! Files are read in bounded chunks, so memory stays flat however large a
+//! transcript grows.
 
 use serde_json::Value;
 use std::collections::{BTreeMap, HashMap, VecDeque};
@@ -19,6 +26,12 @@ use crate::{config, skills, util};
 const RECENT_CALLS: usize = 40;
 const MAX_TOUCHED: usize = 400;
 const MAX_EVENTS: usize = 600;
+/// Prompt timeline per conversation: the first few plus the most recent.
+const PROMPT_HEAD: usize = 4;
+const PROMPT_TAIL: usize = 36;
+/// Bytes read per step; a single longer line grows the buffer just for it.
+const CHUNK: usize = 4 << 20;
+const CACHE_VERSION: u32 = 1;
 
 /// Claude Code CLI commands that look like `/name` but are not skills.
 const BUILTIN_COMMANDS: &[&str] = &[
@@ -30,18 +43,18 @@ const BUILTIN_COMMANDS: &[&str] = &[
     "theme", "todos", "upgrade", "usage", "vim", "auto-mode-setup",
 ];
 
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct Call {
     pub ts: i64,
     pub tool: String,
     pub args: String,
     pub result: String,
-    #[serde(skip)]
+    #[serde(default)]
     pub id: String,
     pub by: Option<String>, // sub-agent key when the call came from a sub-agent
 }
 
-#[derive(Clone, Debug, Default, serde::Serialize)]
+#[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
 pub struct Sub {
     pub key: String,
     pub agent_id: Option<String>,
@@ -52,11 +65,18 @@ pub struct Sub {
     pub calls: u32,
     pub tool_counts: BTreeMap<String, u32>,
     pub skills: BTreeMap<String, u32>,
-    #[serde(skip)]
+    #[serde(default)]
     pub touched: BTreeMap<String, u32>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct Prompt {
+    pub ts: i64,
+    pub text: String,
+}
+
+#[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
+#[serde(default)]
 pub struct Conv {
     pub key: String,
     pub harness: String,
@@ -78,6 +98,15 @@ pub struct Conv {
     pub subs: Vec<Sub>,
     pub skills: BTreeMap<String, u32>,
     pub touched: BTreeMap<String, u32>,
+    // --- digest: what happened, without the transcript ---
+    pub prompt_log: Vec<Prompt>,
+    /// Prompts left out of the timeline between head and tail.
+    pub prompts_skipped: u32,
+    pub last_reply: String,
+    /// Write/Edit/patch calls.
+    pub edits: u32,
+    /// Files this session wrote to (any path), with edit counts.
+    pub changed: BTreeMap<String, u32>,
 }
 
 impl Conv {
@@ -85,6 +114,15 @@ impl Conv {
         Conv { key, harness: harness.into(), session_id: session_id.into(), file: file.to_path_buf(), ..Default::default() }
     }
     pub fn total_calls(&self) -> u32 { self.tool_counts.values().sum() }
+    fn log_prompt(&mut self, ts: i64, text: &str) {
+        let text = util::one_line(text, 220);
+        if text.is_empty() { return; }
+        self.prompt_log.push(Prompt { ts, text });
+        if self.prompt_log.len() > PROMPT_HEAD + PROMPT_TAIL {
+            self.prompt_log.remove(PROMPT_HEAD);
+            self.prompts_skipped += 1;
+        }
+    }
     fn stamp(&mut self, ts: i64) {
         if ts <= 0 { return; }
         if self.started == 0 || ts < self.started { self.started = ts; }
@@ -102,9 +140,10 @@ pub struct Event {
     pub sub: Option<String>,
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
 enum Source { Claude, ClaudeSub, Codex, Sink }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 struct FileState {
     source: Source,
     offset: u64,
@@ -125,6 +164,15 @@ pub struct Ingest {
     structural: bool,
     /// Any transcript grew since the caller last cleared this.
     pub dirty: bool,
+    /// Changed since the index was last saved to disk.
+    pub unsaved: bool,
+}
+
+#[derive(serde::Deserialize)]
+struct CacheFile {
+    version: u32,
+    files: Vec<(PathBuf, FileState)>,
+    convs: Vec<Conv>,
 }
 
 impl Ingest {
@@ -142,6 +190,7 @@ impl Ingest {
         // Forget transcripts that were deleted.
         let gone: Vec<PathBuf> = self.files.keys().filter(|p| !seen.contains(p)).cloned().collect();
         for p in gone {
+            self.unsaved = true;
             if let Some(st) = self.files.remove(&p) {
                 if matches!(st.source, Source::Claude | Source::Codex) {
                     if let Some(k) = st.conv { self.convs.remove(&k); self.structural = true; }
@@ -162,24 +211,32 @@ impl Ingest {
         });
         if st.size == size && st.mtime == mtime { return; }
         self.dirty = true;
-        let mut start = st.offset;
+        self.unsaved = true;
         if size < st.offset {
             // Truncated / rewritten: start over.
-            start = 0;
+            st.offset = 0;
             if matches!(source, Source::Claude | Source::Codex) {
-                if let Some(k) = &st.conv { self.convs.remove(k); }
+                if let Some(k) = st.conv.take() { self.convs.remove(&k); }
             }
         }
         st.size = size;
         st.mtime = mtime;
-        let buf = match read_from(path, start) { Some(b) => b, None => return };
-        let end = match buf.iter().rposition(|&b| b == b'\n') { Some(i) => i + 1, None => return };
-        let st_offset = start + end as u64;
-        let text = String::from_utf8_lossy(&buf[..end]).into_owned();
-        let st_conv = st.conv.clone();
-        let st_sub = st.sub_key.clone();
-        st.offset = st_offset;
+        let Ok(mut f) = File::open(path) else { return };
+        // Bounded chunks: memory stays ~CHUNK however big the transcript is.
+        loop {
+            let offset = self.files[path].offset;
+            if offset >= size { break; }
+            let Some(buf) = read_chunk(&mut f, offset) else { break };
+            let Some(end) = buf.iter().rposition(|&b| b == b'\n') else { break }; // partial last line
+            self.files.get_mut(path).unwrap().offset = offset + end as u64 + 1;
+            let text = String::from_utf8_lossy(&buf[..end]);
+            self.ingest_text(path, source, &text, mtime);
+        }
+    }
 
+    fn ingest_text(&mut self, path: &Path, source: Source, text: &str, mtime: i64) {
+        let st_conv = self.files[path].conv.clone();
+        let st_sub = self.files[path].sub_key.clone();
         match source {
             Source::Claude => {
                 let key = st_conv.unwrap_or_else(|| {
@@ -228,6 +285,32 @@ impl Ingest {
                 for line in text.lines() { self.sink_line(path, line, mtime); }
             }
         }
+    }
+
+    // ----- persistence ---------------------------------------------------
+
+    /// Load the saved index. A missing, unreadable or older-format file just
+    /// means a full re-read.
+    pub fn load_cache() -> Ingest {
+        let parsed = File::open(cache_path()).ok()
+            .and_then(|f| serde_json::from_reader::<_, CacheFile>(std::io::BufReader::new(f)).ok())
+            .filter(|c| c.version == CACHE_VERSION);
+        let Some(c) = parsed else { return Ingest::default() };
+        let mut ing = Ingest::default();
+        for conv in c.convs { ing.convs.insert(conv.key.clone(), conv); }
+        ing.files = c.files.into_iter().collect();
+        ing
+    }
+
+    /// Serialize the index if it changed since the last save. Quick enough to
+    /// call under the brain lock; write the bytes with `write_cache` after.
+    pub fn snapshot(&mut self) -> Option<Vec<u8>> {
+        if !self.unsaved { return None; }
+        self.unsaved = false;
+        #[derive(serde::Serialize)]
+        struct Out<'a> { version: u32, files: Vec<(&'a PathBuf, &'a FileState)>, convs: Vec<&'a Conv> }
+        let out = Out { version: CACHE_VERSION, files: self.files.iter().collect(), convs: self.convs.values().collect() };
+        serde_json::to_vec(&out).ok()
     }
 
     fn push_event(&mut self, ts: i64, conv: &str, kind: &'static str, name: &str, sub: Option<&str>) {
@@ -309,6 +392,7 @@ impl Ingest {
             if text.starts_with('<') { return; }
             let conv = self.convs.get_mut(key).unwrap();
             conv.prompts += 1;
+            conv.log_prompt(ts, text);
             if conv.first_prompt.is_empty() {
                 conv.first_prompt = util::one_line(text, 200);
                 if conv.title.is_empty() { self.structural = true; }
@@ -338,6 +422,7 @@ impl Ingest {
                     if t.starts_with('<') { continue; }
                     let conv = self.convs.get_mut(key).unwrap();
                     conv.prompts += 1;
+                    conv.log_prompt(ts, t);
                     if conv.first_prompt.is_empty() { conv.first_prompt = util::one_line(t, 200); self.structural = true; }
                     self.push_event(ts, key, "prompt", "prompt", None);
                 }
@@ -357,9 +442,11 @@ impl Ingest {
         let mut counted_turn = false;
         for b in blocks {
             match b["type"].as_str() {
-                Some("text") if !counted_turn && sub.is_none() => {
-                    self.convs.get_mut(key).unwrap().turns += 1;
-                    counted_turn = true;
+                Some("text") if sub.is_none() => {
+                    let conv = self.convs.get_mut(key).unwrap();
+                    if !counted_turn { conv.turns += 1; counted_turn = true; }
+                    let t = b["text"].as_str().unwrap_or("").trim();
+                    if !t.is_empty() { conv.last_reply = util::one_line(t, 600); }
                 }
                 Some("tool_use") => {
                     let name = b["name"].as_str().unwrap_or("tool").to_string();
@@ -387,9 +474,16 @@ impl Ingest {
                 if let Some(dir) = p.trim_end_matches("/skill.md").rsplit('/').next() { skill_hits.push(dir.to_string()); }
             }
         }
+        let is_edit = matches!(name, "Write" | "Edit" | "MultiEdit" | "NotebookEdit" | "apply_patch" | "write_file" | "edit_file" | "edit_block");
         {
             let conv = self.convs.get_mut(key).unwrap();
             *conv.tool_counts.entry(name.to_string()).or_insert(0) += 1;
+            if is_edit {
+                conv.edits += 1;
+                for p in &paths {
+                    if conv.changed.len() < MAX_TOUCHED || conv.changed.contains_key(p) { *conv.changed.entry(p.clone()).or_insert(0) += 1; }
+                }
+            }
             conv.recent.push_back(Call { ts, tool: name.into(), args: args.clone(), result: String::new(), id: id.into(), by: sub.map(|s| s.to_string()) });
             while conv.recent.len() > RECENT_CALLS { conv.recent.pop_front(); }
             if let Some(s) = sub {
@@ -466,10 +560,15 @@ impl Ingest {
                 let text = p["message"].as_str().unwrap_or("");
                 let c = self.convs.get_mut(&k).unwrap();
                 c.prompts += 1;
+                c.log_prompt(ts, text);
                 if c.first_prompt.is_empty() { c.first_prompt = util::one_line(text, 200); self.structural = true; }
                 self.push_event(ts, &k, "prompt", "prompt", None);
             }
-            (Some("event_msg"), Some("agent_message")) => { self.convs.get_mut(&k).unwrap().turns += 1; }
+            (Some("event_msg"), Some("agent_message")) => {
+                let c = self.convs.get_mut(&k).unwrap();
+                c.turns += 1;
+                if let Some(t) = p["message"].as_str().filter(|t| !t.trim().is_empty()) { c.last_reply = util::one_line(t, 600); }
+            }
             (Some("event_msg"), Some("thread_name_updated")) | (Some("event_msg"), Some("thread_renamed")) => {
                 if let Some(t) = p["thread_name"].as_str().or(p["name"].as_str()) {
                     let c = self.convs.get_mut(&k).unwrap();
@@ -493,7 +592,8 @@ impl Ingest {
                                     let c = self.convs.get_mut(&k).unwrap();
                                     let np = util::norm_path(f.trim());
                                     if !c.touched.contains_key(&np) { self.structural = true; }
-                                    *c.touched.entry(np).or_insert(0) += 1;
+                                    *c.touched.entry(np.clone()).or_insert(0) += 1;
+                                    if c.changed.len() < MAX_TOUCHED { *c.changed.entry(np).or_insert(0) += 1; }
                                 }
                             }
                         }
@@ -538,6 +638,7 @@ impl Ingest {
             "prompt" => {
                 let c = self.convs.get_mut(&key).unwrap();
                 c.prompts += 1;
+                c.log_prompt(ts, v["text"].as_str().unwrap_or(&name));
                 if c.first_prompt.is_empty() { c.first_prompt = util::one_line(v["text"].as_str().unwrap_or(&name), 200); }
                 self.push_event(ts, &key, "prompt", "prompt", None);
             }
@@ -604,12 +705,27 @@ fn discover() -> Vec<(PathBuf, Source)> {
     out
 }
 
-fn read_from(path: &Path, offset: u64) -> Option<Vec<u8>> {
-    let mut f = File::open(path).ok()?;
+/// Read up to CHUNK bytes from `offset`, extended until the buffer holds at
+/// least one complete line (or the file ends).
+fn read_chunk(f: &mut File, offset: u64) -> Option<Vec<u8>> {
     f.seek(SeekFrom::Start(offset)).ok()?;
     let mut buf = Vec::new();
-    f.read_to_end(&mut buf).ok()?;
-    Some(buf)
+    loop {
+        let before = buf.len();
+        f.by_ref().take(CHUNK as u64).read_to_end(&mut buf).ok()?;
+        if buf.len() == before || buf[before..].contains(&b'\n') { break; }
+    }
+    if buf.is_empty() { None } else { Some(buf) }
+}
+
+pub fn cache_path() -> PathBuf {
+    config::cache_dir().join("sessions-index.json")
+}
+
+pub fn write_cache(bytes: &[u8]) {
+    let p = cache_path();
+    if let Some(d) = p.parent() { let _ = fs::create_dir_all(d); }
+    let _ = util::atomic_write(&p, bytes);
 }
 
 fn read_sub_meta(jsonl: &Path) -> (String, String) {

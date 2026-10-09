@@ -386,7 +386,12 @@ function viewHtml(d, n) {
   let h = '';
   if (d.edit?.note) h += `<div class="sec"><h3>Your note</h3><div class="entry" style="border-color:var(--cyan)">${esc(d.edit.note)}</div></div>`;
   if (d.description) h += `<div class="sec"><h3>Description</h3><div>${esc(d.description)}</div></div>`;
-  if (d.first_prompt) h += `<div class="sec"><h3>First prompt</h3><div class="entry" style="border-color:var(--blue)">${esc(d.first_prompt)}</div></div>`;
+  if (d.prompts_timeline?.length) {
+    const rows = d.prompts_timeline.map((p, i) => (i === 4 && d.prompts_skipped ? `<div class="muted" style="font-size:12px">… ${d.prompts_skipped} more prompts …</div>` : '') +
+      `<div class="entry" style="border-color:var(--blue)"><span class="when">${esc(fmtTime(p.ts))}</span>${esc(p.text)}</div>`).join('');
+    h += `<div class="sec"><h3>What was asked</h3><div class="entries">${rows}</div></div>`;
+  } else if (d.first_prompt) h += `<div class="sec"><h3>First prompt</h3><div class="entry" style="border-color:var(--blue)">${esc(d.first_prompt)}</div></div>`;
+  if (d.last_reply) h += `<div class="sec"><h3>Last reply</h3><div class="entry">${esc(d.last_reply)}</div></div>`;
   const meta = Object.entries(d.meta || {}).filter(([, v]) => v !== '' && v !== null);
   if (meta.length) h += `<div class="sec"><h3>Details</h3><dl class="kv">${meta.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl></div>`;
 
@@ -398,7 +403,9 @@ function viewHtml(d, n) {
   if (d.skills?.length) h += `<div class="sec"><h3>Skills used</h3><div class="chips">${d.skills.map(([s, c]) => chip(skillNodeId(s), `${s} ×${c}`, 'skill')).join('')}</div></div>`;
   if (d.subagents?.length) h += `<div class="sec"><h3>Sub-agents</h3><div class="chips">${d.subagents.map((s) => chip(s.id, `${s.description || s.type} · ${s.calls} calls`, 'subagent')).join('')}</div></div>`;
   if (d.usage?.length) h += `<div class="sec"><h3>Used in ${d.usage.length} conversation(s)</h3><div class="chips">${d.usage.map((u) => chip(u.id, `${u.title} ×${u.uses}`, 'conversation')).join('')}</div></div>`;
-  if (d.conversations?.length) h += `<div class="sec"><h3>Conversations</h3><div class="chips">${d.conversations.map((c) => chip(c.id, c.title, 'conversation')).join('')}</div></div>`;
+  if (d.conversations?.length) h += `<div class="sec"><h3>Sessions (heaviest first)</h3><div class="chips">${d.conversations.map((c) => chip(c.id, c.weight != null ? `${c.title} · w ${c.weight}` : c.title, 'conversation')).join('')}</div></div>`;
+  if (d.files_changed?.length) h += `<div class="sec"><h3>Files changed</h3><div class="bars">${d.files_changed.slice(0, 20).map(([f, c]) => `
+      <div class="bar"><span class="name" title="${esc(f)}">${esc(f.split('/').slice(-2).join('/'))}</span><span class="track"><span class="fill" style="width:${(c / d.files_changed[0][1]) * 100}%"></span></span><span class="v">${c}</span></div>`).join('')}</div></div>`;
   if (d.touched?.length) h += `<div class="sec"><h3>Brain files touched</h3><div class="chips">${d.touched.map((t) => { const nn = state.brain.nodes[state.brain.index.get(t.id)]; return chip(t.id, `${nn ? nn.l : t.path.split('/').pop()} ×${t.count}`, nn?.k || 'note', nn?.x); }).join('')}</div></div>`;
   if (d.linked_from?.length) h += `<div class="sec"><h3>Linked from</h3><div class="chips">${d.linked_from.filter((l) => l.id).map((l) => chip(l.id, l.title, 'note')).join('')}</div></div>`;
 
@@ -413,7 +420,7 @@ function viewHtml(d, n) {
 
   if (d.calls?.length) {
     h += `<div class="sec"><h3>Recent calls</h3><div class="calls">${d.calls.slice(0, 25).map((c) => `
-      <div class="call"><div class="top"><span class="tool">${esc(c.tool)}</span><span class="when">${esc(fmtTime(c.ts))}</span></div>
+      <div class="call"><div class="top"><span class="tool">${esc(c.tool)}</span><span class="when">${esc(fmtTime(c.ts))}${c.conversation ? ' · ' + esc(c.conversation) : ''}</span></div>
       ${c.args ? `<div class="args">${esc(c.args)}</div>` : ''}${c.result ? `<div class="res">→ ${esc(c.result)}</div>` : ''}</div>`).join('')}</div></div>`;
   }
   if (d.files?.length) {

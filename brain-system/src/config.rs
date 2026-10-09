@@ -119,6 +119,12 @@ pub fn codex_sessions_dir() -> Option<PathBuf> {
     env_dir("BRAIN_CODEX_SESSIONS").or_else(|| home_dir().map(|h| h.join(".codex").join("sessions")))
 }
 
+/// Rebuildable state (the session index). Outside the vault so Obsidian
+/// never sees it; deleting it only costs one full transcript re-read.
+pub fn cache_dir() -> PathBuf {
+    env::var("BRAIN_CACHE_DIR").ok().map(PathBuf::from).unwrap_or_else(|| user_root().join("cache"))
+}
+
 /// Harness-agnostic JSONL sink any agent can append to (see README).
 pub fn events_dir() -> PathBuf {
     system_dir().join("brain-events")

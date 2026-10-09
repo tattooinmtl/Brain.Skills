@@ -16,7 +16,7 @@ export const KINDS = {
   project:      { color: '#ff9f43', label: 'Projects' },
   conversation: { color: '#3d8bff', label: 'Conversations' },
   session:      { color: '#ffffff', label: 'Sessions (vault logs)' },
-  tools:        { color: '#2dff88', label: 'Tools' },
+  tools:        { color: '#2dff88', label: 'Tools (per project)' },
   skill:        { color: '#ffd23f', label: 'Skills' },
   subagent:     { color: '#b36bff', label: 'Sub-agents' },
   note:         { color: '#22d3c5', label: 'Notes' },
@@ -334,6 +334,8 @@ export class NeuralBrain {
     const col = new THREE.Color();
     this.nodes.forEach((nd, i) => {
       col.set(this.colorFor(nd));
+      // Recency (r: 1 = active now) fades old sessions toward the background.
+      if (nd.r != null && !nd.c) col.multiplyScalar(0.26 + 0.74 * nd.r);
       this.colors.set([col.r, col.g, col.b], i * 3);
       this.sizes[i] = (KIND_SIZE[nd.k] || 2.5) * (0.65 + Math.sqrt(nd.w || 1) * 0.42);
       seeds[i] = hashSeed(nd.id);
