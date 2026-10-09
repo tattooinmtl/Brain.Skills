@@ -120,6 +120,28 @@ textarea.input { font-family: "Cascadia Code", Consolas, monospace; font-size: 1
 .brain-loading { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 14px; align-items: center; justify-content: center; color: var(--muted); z-index: 4; pointer-events: none; }
 .spinner { width: 46px; height: 46px; border-radius: 50%; border: 2px solid rgba(95,243,255,.15); border-top-color: var(--cyan); animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+/* follow live + layers */
+.follow-btn { display: inline-flex; align-items: center; gap: 7px; }
+.follow-btn .rec { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.follow-btn.on { border-color: var(--red); color: #fff; background: rgba(255,77,109,.16); }
+.follow-btn.on .rec { background: var(--red); box-shadow: 0 0 8px var(--red); animation: beat 1.4s ease-in-out infinite; }
+.btn.open { border-color: var(--cyan); color: var(--cyan); }
+.hud-menu { margin-top: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.02); display: grid; gap: 6px; font-size: 12px; }
+.hud-menu[hidden] { display: none; }
+.hud-menu .menu-title { font-weight: 700; color: #dff9ff; display: flex; justify-content: space-between; }
+.hud-menu label { display: flex; gap: 6px; align-items: center; cursor: pointer; color: var(--text); }
+.hud-menu label.sel { justify-content: space-between; }
+.hud-menu select, .hud-menu input[type=range] { background: var(--bg-3); color: var(--text); border: 1px solid var(--line-2); border-radius: 6px; font: inherit; font-size: 12px; padding: 2px 4px; }
+.hud-menu input[type=range] { width: 120px; padding: 0; accent-color: var(--cyan); }
+.menu-note { font-size: 11px; line-height: 1.35; }
+.follow-card { position: absolute; left: 0; top: 0; z-index: 6; pointer-events: none; min-width: 170px; max-width: 300px; padding: 8px 11px; border-radius: 10px;
+  background: rgba(6,10,22,.82); border: 1px solid var(--line-2); box-shadow: 0 0 24px rgba(95,243,255,.12); backdrop-filter: blur(6px); will-change: transform; }
+.follow-card.in { animation: cardIn .35s ease-out; }
+.follow-card .fc-verb { font-weight: 700; font-size: 13px; display: flex; gap: 7px; align-items: center; }
+.follow-card .fc-verb i { font-style: normal; }
+.follow-card .fc-detail { font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; color: #dfe8ff; margin-top: 3px; word-break: break-all; }
+.follow-card .fc-meta { font-size: 11px; color: var(--muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@keyframes cardIn { from { opacity: 0; filter: blur(3px); } to { opacity: 1; filter: none; } }
 .activity-feed { position: absolute; left: 14px; bottom: 54px; width: 300px; display: flex; flex-direction: column-reverse; gap: 4px; pointer-events: none; z-index: 5; }
 .act { font-size: 11.5px; background: rgba(9,13,26,.75); border-left: 2px solid var(--green); padding: 3px 8px; border-radius: 0 6px 6px 0; color: var(--text); animation: fadeOut 9s forwards; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @keyframes fadeOut { 0% { opacity: 0; transform: translateX(-8px); } 6% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; } }

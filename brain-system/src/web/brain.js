@@ -55,6 +55,12 @@ export class NeuralBrain {
     this.showLabels = true;
     this.bloomOn = true;
     this.fly = { on: false, keys: new Set(), speed: 60, yaw: 0, pitch: 0 };
+    // Follow-live camera: only active while switched on (the Follow button).
+    this.follow = { on: false, hideOthers: false, hideNames: false, dist: 180, hop: 650, dwell: 1600, track: null, pending: null, set: null, path: null };
+    this.bouncy = false;
+    this.spread = 1;
+    this.drag = null;
+    this.fps = { frames: 0, t0: performance.now() };
     this.tween = null;
     this.sparkQueue = [];
     this.clock = new THREE.Clock();
@@ -235,6 +241,11 @@ export class NeuralBrain {
       this.labelLayer.appendChild(el);
       this.labelPool.push(el);
     }
+
+    this.followCard = document.createElement('div');
+    this.followCard.className = 'follow-card';
+    this.followCard.hidden = true;
+    this.container.appendChild(this.followCard);
 
     new ResizeObserver(() => this.resize()).observe(this.container);
     this.resize();
@@ -441,6 +452,17 @@ export class NeuralBrain {
 
   applyHighlight() {
     const n = this.nodes.length;
+    const f = this.follow;
+    if (f.on && f.hideOthers && f.set) {
+      // Following with "hide others": only the event's path and its neighbourhood.
+      for (let i = 0; i < n; i++) this.hl[i] = f.path.has(i) ? 2.5 : f.set.has(i) ? 1 : 0;
+      this.links.forEach(([a, b], e) => {
+        const h = this.hl[a] === 0 || this.hl[b] === 0 ? 0 : f.path.has(a) && f.path.has(b) ? 4 : 0.6;
+        this.edgeHl[e * 2] = this.edgeHl[e * 2 + 1] = h;
+      });
+      if (this.hlAttr) { this.hlAttr.needsUpdate = true; this.edgeHlAttr.needsUpdate = true; }
+      return;
+    }
     const sel = this.selected;
     const neigh = new Set(sel >= 0 ? this.adj[sel] : []);
     for (let i = 0; i < n; i++) {
@@ -595,6 +617,99 @@ export class NeuralBrain {
     this.emit('fly', f.on);
   }
 
+  // ---------------------------------------------------------------- follow live
+  setFollow(on) {
+    const f = this.follow;
+    if (on === f.on) return;
+    f.on = on;
+    f.track = null; f.pending = null; f.set = null; f.path = null;
+    this.followCard.hidden = true;
+    if (on) {
+      if (this.fly.on) this.setFly(false);
+      this.tween = null;
+      this.controls.autoRotate = true;
+      this.controls.autoRotateSpeed = 0.6;
+    } else {
+      this.controls.autoRotateSpeed = 0.25;
+      this.controls.autoRotate = this.autoRotatePref !== false;
+    }
+    this.applyHighlight();
+    this.emit('follow', on);
+  }
+
+  setFollowOptions(o) {
+    Object.assign(this.follow, o);
+    if (this.follow.on) this.applyHighlight();
+  }
+
+  /** Called for every live event. The newest one takes the camera once the
+   *  current one has been on screen for `dwell` ms. */
+  followEvent(path, html) {
+    const f = this.follow;
+    if (!f.on) return;
+    const idx = path.map((id) => this.index.get(id)).filter((i) => i !== undefined);
+    if (!idx.length) return;
+    const ev = { idx, html };
+    if (f.track && performance.now() - f.track.t0 < f.dwell) { f.pending = ev; return; }
+    this.startTrack(ev);
+  }
+
+  startTrack(ev) {
+    const f = this.follow;
+    f.track = { idx: ev.idx, t0: performance.now() };
+    f.pending = null;
+    f.path = new Set(ev.idx);
+    f.set = new Set(ev.idx);
+    for (const j of this.adj[ev.idx[ev.idx.length - 1]].slice(0, 40)) f.set.add(j);
+    this.followCard.innerHTML = ev.html;
+    this.followCard.hidden = false;
+    this.followCard.classList.remove('in'); void this.followCard.offsetWidth; this.followCard.classList.add('in');
+    this.applyHighlight();
+  }
+
+  /** Glide the camera along the current event's path, then hold on its end. */
+  stepFollow(dt, now) {
+    const f = this.follow, tr = f.track;
+    if (!tr) return;
+    if (f.pending && now - tr.t0 >= f.dwell) { this.startTrack(f.pending); return; }
+    const p = this.posArr, idx = tr.idx;
+    const prog = (now - tr.t0) / f.hop;
+    const seg = Math.min(Math.floor(prog), idx.length - 1);
+    const a = idx[seg], b = idx[Math.min(seg + 1, idx.length - 1)];
+    const t = seg >= idx.length - 1 ? 0 : prog - seg;
+    const e = t * t * (3 - 2 * t);
+    const want = new THREE.Vector3(
+      p[a * 3] + (p[b * 3] - p[a * 3]) * e, p[a * 3 + 1] + (p[b * 3 + 1] - p[a * 3 + 1]) * e, p[a * 3 + 2] + (p[b * 3 + 2] - p[a * 3 + 2]) * e);
+    const k = 1 - Math.exp(-dt * 5);
+    const off = this.camera.position.clone().sub(this.controls.target);
+    const d = off.length() || 1;
+    const nd = d + (f.dist - d) * k;
+    this.controls.target.lerp(want, k);
+    this.camera.position.copy(this.controls.target).add(off.multiplyScalar(nd / d));
+    // Info card beside the node the light is on.
+    const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
+    const s = want.clone().project(this.camera);
+    if (s.z < 1) {
+      const x = THREE.MathUtils.clamp((s.x * 0.5 + 0.5) * w + 26, 8, Math.max(8, w - this.followCard.offsetWidth - 8));
+      const y = THREE.MathUtils.clamp((1 - (s.y * 0.5 + 0.5)) * h - 20, 8, Math.max(8, h - this.followCard.offsetHeight - 8));
+      this.followCard.style.transform = `translate(${x.toFixed(0)}px, ${y.toFixed(0)}px)`;
+    }
+  }
+
+  // ---------------------------------------------------------------- layers
+  setLayer(name, on) {
+    switch (name) {
+      case 'labels': this.showLabels = on; break;
+      case 'glow': this.bloomOn = on; break;
+      case 'edges': this.edges.visible = on; break;
+      case 'sparks': this.sparkPoints.visible = on; break;
+      case 'stars': this.stars.visible = on; break;
+      case 'orbit': this.setAutoRotate(on); break;
+      case 'bouncy': this.bouncy = on; this.worker.postMessage({ type: 'physics', bouncy: on, spread: this.spread }); break;
+    }
+  }
+  setSpread(v) { this.spread = v; this.worker.postMessage({ type: 'physics', bouncy: this.bouncy, spread: v }); }
+
   setBloom(on) { this.bloomOn = on; }
   reheat() { this.worker.postMessage({ type: 'reheat', alpha: 0.6 }); }
   setAutoRotate(on) { this.controls.autoRotate = on; this.autoRotatePref = on; }
@@ -610,11 +725,44 @@ export class NeuralBrain {
       this.pointerDirty = true;
     });
     c.addEventListener('pointerleave', () => { this.pointer.x = -1; this.hovered = -1; c.style.cursor = ''; });
-    c.addEventListener('pointerdown', (e) => { this.pointer.down = [e.clientX, e.clientY]; this.pointer.moved = false; c.focus(); });
     const local = (e) => { const r = c.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+    c.addEventListener('pointerdown', (e) => {
+      this.pointer.down = [e.clientX, e.clientY]; this.pointer.moved = false; c.focus();
+      // Bouncing nodes: grab a node, pull it, let go and it springs back.
+      if (this.bouncy && e.button === 0 && !this.fly.on) {
+        const i = this.pick(...local(e));
+        if (i >= 0) {
+          const at = new THREE.Vector3().fromArray(this.posArr, i * 3);
+          const normal = new THREE.Vector3(); this.camera.getWorldDirection(normal);
+          this.drag = { i, plane: new THREE.Plane().setFromNormalAndCoplanarPoint(normal, at) };
+          this.controls.enabled = false;
+          c.setPointerCapture(e.pointerId);
+        }
+      }
+    });
+    c.addEventListener('pointermove', (e) => {
+      if (!this.drag || !this.pointer.moved) return;
+      const [x, y] = local(e);
+      const ray = new THREE.Raycaster();
+      ray.setFromCamera(new THREE.Vector2(x / c.clientWidth * 2 - 1, -(y / c.clientHeight) * 2 + 1), this.camera);
+      const hit = new THREE.Vector3();
+      if (!ray.ray.intersectPlane(this.drag.plane, hit)) return;
+      const i = this.drag.i;
+      this.posArr.set([hit.x, hit.y, hit.z], i * 3);
+      this.posAttr.needsUpdate = true;
+      this.syncEdgePositions();
+      this.pulse[i] = Math.max(this.pulse[i], 0.6); this.pulseAttr.needsUpdate = true;
+      this.worker.postMessage({ type: 'drag', i, pos: [hit.x, hit.y, hit.z] });
+    });
     c.addEventListener('pointerup', (e) => {
       const wasClick = this.pointer.down && !this.pointer.moved && e.button === 0;
       this.pointer.down = null;
+      if (this.drag) {
+        this.worker.postMessage({ type: 'release', i: this.drag.i });
+        this.drag = null;
+        this.controls.enabled = !this.fly.on;
+        this.lastInteract = performance.now();
+      }
       if (!wasClick || this.fly.on) return;
       const i = this.pick(...local(e));
       if (i >= 0) this.select(this.nodes[i].id);
@@ -695,6 +843,7 @@ export class NeuralBrain {
       if (k >= 1) this.tween = null;
     }
     if (this.fly.on) this.stepFly(dt);
+    else if (this.follow.on) { this.stepFollow(dt, now); this.controls.update(); }
     else {
       if (this.autoRotatePref !== false && !this.controls.autoRotate && now - this.lastInteract > 45000) this.controls.autoRotate = true;
       this.controls.update();
@@ -707,7 +856,10 @@ export class NeuralBrain {
       const i = this.pick(this.pointer.x, this.pointer.y);
       if (i !== this.hovered) { this.hovered = i; this.canvas.style.cursor = i >= 0 ? 'pointer' : ''; this.emit('hover', i >= 0 ? this.nodes[i] : null); }
     }
-    if (this.showLabels || this.hovered >= 0 || this.selected >= 0) this.updateLabels();
+    this.fps.frames++;
+    if (now - this.fps.t0 > 1000) { this.emit('fps', Math.round(this.fps.frames * 1000 / (now - this.fps.t0))); this.fps.frames = 0; this.fps.t0 = now; }
+    if (this.follow.on && this.follow.hideNames) this.labelPool.forEach((el) => { el.style.display = 'none'; });
+    else if (this.showLabels || this.hovered >= 0 || this.selected >= 0) this.updateLabels();
     else this.labelPool.forEach((el) => { el.style.display = 'none'; });
 
     if (this.bloomOn) this.composer.render(); else this.renderer.render(this.scene, this.camera);

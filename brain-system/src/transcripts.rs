@@ -138,6 +138,8 @@ pub struct Event {
     pub kind: &'static str, // prompt | tool | skill | subagent | touch | title
     pub name: String,
     pub sub: Option<String>,
+    /// One short line for the live view: the file, command or query.
+    pub detail: String,
 }
 
 #[derive(Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -318,9 +320,15 @@ impl Ingest {
         self.seq += 1;
         self.events.push_back(Event {
             seq: self.seq, ts: if ts > 0 { ts } else { util::now_ms() },
-            conv: conv.to_string(), kind, name: name.to_string(), sub: sub.map(|s| s.to_string()),
+            conv: conv.to_string(), kind, name: name.to_string(), sub: sub.map(|s| s.to_string()), detail: String::new(),
         });
         while self.events.len() > MAX_EVENTS { self.events.pop_front(); }
+    }
+
+    /// Attach a detail line to the event just pushed.
+    fn detail_last(&mut self, d: &str) {
+        if !self.emit { return; }
+        if let Some(e) = self.events.back_mut() { e.detail = util::one_line(d, 120); }
     }
 
     fn attach_sub(&mut self, conv_key: &str, agent_id: &str, meta: (String, String)) -> String {
@@ -398,6 +406,7 @@ impl Ingest {
                 if conv.title.is_empty() { self.structural = true; }
             }
             self.push_event(ts, key, "prompt", "prompt", None);
+            self.detail_last(text);
             return;
         }
         let Some(blocks) = content.as_array() else { return };
@@ -425,6 +434,7 @@ impl Ingest {
                     conv.log_prompt(ts, t);
                     if conv.first_prompt.is_empty() { conv.first_prompt = util::one_line(t, 200); self.structural = true; }
                     self.push_event(ts, key, "prompt", "prompt", None);
+                    self.detail_last(t);
                 }
                 _ => {}
             }
@@ -511,6 +521,7 @@ impl Ingest {
             }
         }
         self.push_event(ts, key, "tool", name, sub);
+        self.detail_last(&args);
         if name == "Agent" || name == "Task" { self.push_event(ts, key, "subagent", &args, Some(id)); }
         for p in &paths { self.push_event(ts, key, "touch", p, sub); }
         for s in skill_hits { self.record_skill(key, sub, &s, ts); }
@@ -563,6 +574,7 @@ impl Ingest {
                 c.log_prompt(ts, text);
                 if c.first_prompt.is_empty() { c.first_prompt = util::one_line(text, 200); self.structural = true; }
                 self.push_event(ts, &k, "prompt", "prompt", None);
+                self.detail_last(text);
             }
             (Some("event_msg"), Some("agent_message")) => {
                 let c = self.convs.get_mut(&k).unwrap();

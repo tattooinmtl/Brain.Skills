@@ -489,7 +489,7 @@ impl Brain {
                     _ => vec![conv],
                 };
                 path.retain(|p| !p.is_empty());
-                Some(json!({ "seq": e.seq, "ts": e.ts, "kind": e.kind, "name": util::clip(&e.name, 80), "path": path }))
+                Some(json!({ "seq": e.seq, "ts": e.ts, "kind": e.kind, "name": util::clip(&e.name, 80), "detail": e.detail, "path": path }))
             }).collect()
         };
         json!({

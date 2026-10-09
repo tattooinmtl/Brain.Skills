@@ -43,6 +43,19 @@ click a node to open its panel, double-click to fly to it, **F** for free
 flight (WASD, Space/C up and down, Shift boost, wheel sets speed, Esc exits),
 **/** to search. The legend toggles each category.
 
+**Follow live** (button or **L**, **Esc** stops): while it is on, the camera
+glides along each new event's path (session, project, tools or skill) and a
+small card says what happened: Reading, Writing, Editing, Running, Searching,
+Browsing, a skill, a sub-agent, a prompt, with the file, command or query.
+Its settings (gear): hide other nodes, hide names, camera distance and pace.
+It never moves the camera while it is off.
+
+**Layers** turns parts of the view on or off to save frame rate: names, glow,
+links, activity sparks, starfield, idle orbit, and **Bouncing nodes**. With
+bouncing on you can grab a node, pull it away and let go: links act as springs
+and every node repels like a charge, so it springs back to where the forces
+balance. **Spread** scales that repulsion. Settings are remembered per browser.
+
 The side panel's **Edit** lets you rename a node, give it a colour and a note
 (stored in `<vault>/_system/brain-graph/overlay.json`), edit the underlying
 markdown file (vault notes and `SKILL.md`), and append entries to any node's
